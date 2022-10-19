@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>상품 등록</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-write container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-book-medical"></i>
+                도서 등록
+            </h1>
+
+            <script>
+                let ProductCreate__submitDone = false;
+
+                function ProductCreate__submit(form) {
+                    if (ProductCreate__submitDone) {
+                        return;
+                    }
+
+                    form.subject.value = form.subject.value.trim();
+
+                    if (form.subject.value.length == 0) {
+                        warningModal("제목을 입력해주세요.");
+                        form.subject.focus();
+
+                        return;
+                    }
+
+                    form.price.value = form.price.value.trim();
+
+                    if (form.price.value.length == 0) {
+                        warningModal("가격을 입력해주세요.");
+                        form.price.focus();
+
+                        return;
+                    }
+
+                    form.postTagContents.value = form.postTagContents.value.trim();
+
+                    if (form.postTagContents.value.length == 0) {
+                        warningModal("태그를 입력해주세요.");
+                        form.postTagContents.focus();
+
+                        return;
+                    }
+
+                    form.submit();
+
+                    ProductCreate__submitDone = true;
+                }
+            </script>
+
+
+            <form th:action method="POST" class="flex flex-col gap-3"
+                  onsubmit="ProductCreate__submit(this); return false;">
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">글 태그 선택</span>
+                    </label>
+                    <select class="select select-bordered" name="postKeywordId">
+                        <option disabled="disabled" selected>- 글 태그 선택 -</option>
+                        <option th:each="postKeyword : ${postKeywords}"
+                                th:value="${postKeyword.id}"
+                                th:text="|${postKeyword.content} : 글 ${@ut.nf(postKeyword.extra_postTagsCount)}건|"></option>
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">제목</span>
+                    </label>
+                    <input autofocus type="text" name="subject" placeholder="제목" class="input input-bordered"
+                           maxlength="50">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">가격</span>
+                    </label>
+                    <input autofocus type="number" name="price" placeholder="가격" class="input input-bordered"
+                           maxlength="50">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">태그</span>
+                    </label>
+                    <input type="text" name="productTagContents" placeholder="#태그1 #태그2 #태그3 ..."
+                           class="input input-bordered"
+                           maxlength="50">
+                </div>
+
+                <div class="grid grid-cols-2 mt-2 gap-2">
+                    <button type="button" onclick="history.back();" class="btn btn-secondary btn-outline">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span class="ml-1">취소</span>
+                    </button>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-book-medical"></i>
+                        <span class="ml-1">도서 등록</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/html">
+
+<body>
+<th:block th:fragment="postListItem">
+    <div class="card bg-base-100 shadow-xl">
+        <a th:href="@{|/post/${post.id}|}" class="block">
+            <figure>
+                <svg width="200" height="200" th:data-jdenticon-value="${post.jdenticon}"></svg>
+            </figure>
+        </a>
+        <div class="card-body">
+            <h2 class="card-title flex flex-wrap">
+                <a th:href="@{|/post/${post.id}|}" class="mr-auto">
+                    <i class="fa-solid fa-newspaper"></i>
+                    <span th:text="${post.subject}"></span>
+                </a>
+                <div class="flex">
+                    <svg width="20" height="20" th:data-jdenticon-value="${post.author.jdenticon}"></svg>
+                    <div th:text="${post.author.name}"></div>
+                </div>
+            </h2>
+            <div th:utext="${post.extra_postTagLinks}"></div>
+            <div class="flex justify-end">
+                <div class="badge badge-outline">
+                    <i class="fa-solid fa-pen"></i>
+                    <span class="ml-2"
+                          th:text="${#temporals.format(post.createDate, 'yy-MM-dd HH:mm')}"></span>
+                </div>
+            </div>
+            <div th:if="${post.createDate != post.modifyDate}" class="flex justify-end">
+                <div class="badge">
+                    <i class="fa-solid fa-eraser"></i>
+                    <span class="ml-2"
+                          th:text="${#temporals.format(post.modifyDate, 'yy-MM-dd HH:mm')}"></span>
+                </div>
+            </div>
+            <div class="card-actions justify-end">
+                <a th:href="@{|/post/${post.id}|}" class="btn btn-sm">
+                    <i class="fa-solid fa-eye"></i>
+                    <span class="ml-2">보기</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>글 내용</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-write container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-newspaper"></i>
+                글 내용
+            </h1>
+
+            <div class="flex flex-col mt-2 gap-3">
+                <div>
+                    <h2 class="font-bold" th:text="${post.subject}"></h2>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex">
+                        <svg width="20" height="20" th:data-jdenticon-value="${post.author.jdenticon}"></svg>
+                        <div th:text="${post.author.name}"></div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3">
+                        <div>
+                            <div class="badge">
+                                <i class="fa-solid fa-pen"></i>
+                                <span class="ml-1">작성</span>
+                                <span class="ml-1"
+                                      th:text="${#temporals.format(post.createDate, 'yy-MM-dd HH:mm')}"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="badge badge-outline">
+                                <i class="fa-solid fa-eraser"></i>
+                                <span class="ml-1">수정</span>
+                                <span class="ml-1"
+                                      th:text="${#temporals.format(post.modifyDate, 'yy-MM-dd HH:mm')}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div th:utext="${post.extra_postTagLinks}"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <a th:if="${@postService.actorCanModify(@rq.member, post)}"
+                       th:href="@{|/post/${post.id}/modify|}"
+                       class="btn btn-secondary btn-sm btn-outline">
+                        <i class="fa-solid fa-eraser"></i>
+                        <span class="ml-1">수정</span>
+                    </a>
+
+                    <a th:if="${@postService.actorCanRemove(@rq.member, post)}" href="javascript:;"
+                       onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();"
+                       class="btn btn-secondary btn-sm btn-outline">
+                        <i class="fa-solid fa-trash"></i>
+                        <span class="ml-1">삭제</span>
+                    </a>
+                    <form th:action="@{|/post/${post.id}/remove|}" method="POST" hidden></form>
+
+                    <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm  btn-outline">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span class="ml-1">이전</span>
+                    </button>
+                </div>
+
+                <div class="flex justify-center">
+                    <svg width="200" height="200" th:data-jdenticon-value="${post.jdenticon}"></svg>
+                </div>
+
+                <div class="toast-ui-viewer">
+                    <div class="toastui-editor-contents" style="overflow-wrap: break-word;"
+                         th:utext="${post.forPrintContentHtml}"></div>
+                </div>
+
+                <!--
+               <div class="toast-ui-viewer">
+                   <script type="text/x-template" th:utext="${post.content}"></script>
+               </div>
+               -->
+            </div>
+        </div>
+    </section>
+
+    <th:block th:replace="fragment/toastEditor :: toastEditor"></th:block>
+
+</main>
+</body>
+</html>

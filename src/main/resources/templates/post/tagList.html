@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>글 태그</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-post-list container mx-auto">
+
+        <div class="px-2 pt-4">
+
+            <a th:href="@{/post/list}" class="float-right text-link">
+                전체보기
+                <i class="fa-solid fa-angle-right"></i>
+            </a>
+
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-rectangle-list"></i>
+                <a th:href="@{|/post/tag/${tagContent}|}" class="text-link">
+                    <i class="fa-solid fa-hashtag"></i>[[${tagContent}]]
+                </a>
+                <span>관련 글</span>
+            </h1>
+
+            <div class="mt-2">
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                    <li th:each="postTag : ${postTags}" th:with="post = ${postTag.post}">
+                        <th:block th:replace="fragment/postListItem :: postListItem" ></th:block>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

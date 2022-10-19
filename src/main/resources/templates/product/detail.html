@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>도서 정보</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-write container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-book-open"></i>
+                도서 정보
+            </h1>
+
+            <div class="flex flex-col mt-2 gap-3">
+                <div>
+                    <h2 class="font-bold" th:text="${product.subject}"></h2>
+                </div>
+
+                <div class="flex">
+                    <svg width="20" height="20" th:data-jdenticon-value="${product.author.jdenticon}"></svg>
+                    <div th:text="${product.author.name}"></div>
+                </div>
+
+                <div th:text="|￦ ${@ut.nf(product.salePrice)}|"></div>
+
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex flex-wrap gap-3">
+                        <div>
+                            <div class="badge">
+                                <i class="fa-solid fa-pen"></i>
+                                <span class="ml-1">작성</span>
+                                <span class="ml-1"
+                                      th:text="${#temporals.format(product.createDate, 'yy-MM-dd HH:mm')}"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="badge badge-outline">
+                                <i class="fa-solid fa-eraser"></i>
+                                <span class="ml-1">수정</span>
+                                <span class="ml-1"
+                                      th:text="${#temporals.format(product.modifyDate, 'yy-MM-dd HH:mm')}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:utext="${product.extra_productTagLinks}"></div>
+
+                <div>
+                    <a th:if="${@productService.actorCanModify(@rq.member, product)}"
+                       th:href="@{|/product/${product.id}/modify|}"
+                       class="btn btn-secondary btn-sm btn-outline">
+                        <i class="fa-solid fa-eraser"></i>
+                        <span class="ml-1">수정</span>
+                    </a>
+
+                    <a th:if="${@productService.actorCanRemove(@rq.member, product)}" href="javascript:;"
+                       onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();"
+                       class="btn btn-secondary btn-sm btn-outline">
+                        <i class="fa-solid fa-trash"></i>
+                        <span class="ml-1">삭제</span>
+                    </a>
+                    <form th:action="@{|/product/${product.id}/remove|}" method="POST" hidden></form>
+
+                    <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm  btn-outline">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span class="ml-1">이전</span>
+                    </button>
+                </div>
+
+                <div class="flex justify-center">
+                    <svg width="200" height="200" th:data-jdenticon-value="${product.jdenticon}"></svg>
+                </div>
+
+                <div>
+                    <h2 class="font-bold"><i class="fa-solid fa-indent"></i> 목차</h2>
+
+                    <ol class="pl-6 mt-2">
+                        <li style="list-style: decimal" class="mt-1"
+                            th:each="i : ${#numbers.sequence(posts.size() - 1, 0, -1)}"
+                            th:with="post=${posts[i]}">
+                            <a th:if="${@postService.actorCanSee(@rq.member, post)}" class="text-link" target="_blank" th:href="@{|/post/${post.id}|}"
+                               th:text="|${post.subject}|"></a>
+                            <span th:unless="${@postService.actorCanSee(@rq.member, post)}" th:text="|${post.subject}|"></span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <th:block th:replace="fragment/toastEditor :: toastEditor"></th:block>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<script th:inline="javascript">
+    const alertMsg = /*[[${alertMsg}]]*/ null;
+
+    if (alertMsg && alertMsg.trim().length > 0) {
+        alert(alertMsg.trim());
+    }
+
+    history.back();
+</script>

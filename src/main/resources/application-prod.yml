@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://${prodDbIp}:3306/final__2022_10_08__prod?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+    username: ${prodDbId}
+    password: ${prodDbPw}
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+        use_sql_comments: false
+    hibernate:
+      ddl-auto: none
+logging:
+  level:
+    root: info
+    com.ll.exam.final__2022_10_08.app: info
+    org.hibernate.type.descriptor.sql: info
+custom:
+  site:
+    baseUrl: "https://service-domain"

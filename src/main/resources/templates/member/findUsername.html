@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>아이디 찾기</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-login flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-md w-full px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-fingerprint"></i>
+
+                아이디 찾기
+            </h1>
+
+            <script>
+                let MemberFindUsername__submitDone = false;
+
+                function MemberFindUsername__submit(form) {
+                    if (MemberFindUsername__submitDone) {
+                        return;
+                    }
+
+                    form.email.value = form.email.value.trim();
+
+                    if (form.email.value.length == 0) {
+                        warningModal("아이디를 입력해주세요.");
+                        form.email.focus();
+
+                        return;
+                    }
+
+                    form.submit();
+                    MemberFindUsername__submitDone = true;
+                }
+            </script>
+
+
+            <form th:action method="POST" class="flex flex-col gap-3"
+                  onsubmit="MemberFindUsername__submit(this); return false;">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">이메일</span>
+                    </label>
+                    <input autofocus type="email" name="email" placeholder="이메일" class="input input-bordered"
+                           maxlength="50">
+                </div>
+
+                <div class="grid grid-cols-2 mt-2 gap-2">
+                    <a href="/member/findPassword" class="btn btn-secondary btn-outline">비밀번호 찾기</a>
+                    <input class="btn btn-primary" type="submit" value="아이디찾기">
+                </div>
+
+                <div class="flex justify-center">
+                    <a href="/member/login" class="btn btn-link">로그인</a>
+                    <a href="/member/join" class="btn btn-link">회원가입</a>
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>메인</title>
+</head>
+
+<main layout:fragment="main">
+    <section th:unless="${posts != null && posts.size > 0}"
+             class="section section-post-list flex-grow flex items-center justify-center">
+        <div>
+            <div>글이 존재하지 않습니다.</div>
+            <a href="/post/write" class="block text-link mt-2"><i class="fa-solid fa-pen"></i> 글 작성 하러가기</a>
+        </div>
+    </section>
+
+    <section th:if="${posts != null && posts.size > 0}" class="section section-post-list container mx-auto">
+
+        <div class="px-2 pt-4">
+            <a th:href="@{/post/list}" class="float-right text-link">
+                더 보기
+                <i class="fa-solid fa-angle-right"></i>
+            </a>
+
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-rectangle-list"></i>
+                최신 글
+            </h1>
+
+            <div class="mt-2">
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                    <li th:each="post : ${posts}">
+                        <th:block th:replace="fragment/postListItem :: postListItem" ></th:block>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+
+</html>

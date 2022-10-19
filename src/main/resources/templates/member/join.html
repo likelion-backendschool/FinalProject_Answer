@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>회원가입</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-join flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-md w-full px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-user-plus"></i>
+
+                회원가입
+            </h1>
+
+            <script>
+                let MemberJoin__submitDone = false;
+
+                function MemberJoin__submit(form) {
+                    if (MemberJoin__submitDone) {
+                        return;
+                    }
+
+                    form.username.value = form.username.value.trim();
+
+                    if (form.username.value.length == 0) {
+                        warningModal("로그인아이디를 입력해주세요.");
+                        form.username.focus();
+
+                        return;
+                    }
+
+                    form.password.value = form.password.value.trim();
+
+                    if (form.password.value.length == 0) {
+                        warningModal("로그인비밀번호를 입력해주세요.");
+                        form.password.focus();
+
+                        return;
+                    }
+
+                    form.email.value = form.email.value.trim();
+
+                    if (form.email.value.length == 0) {
+                        warningModal("이메일을 입력해주세요.");
+                        form.email.focus();
+
+                        return;
+                    }
+
+                    form.submit();
+                    MemberJoin__submitDone = true;
+                }
+            </script>
+
+
+            <form th:action method="POST" class="flex flex-col gap-3"
+                  onsubmit="MemberJoin__submit(this); return false;">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">아이디</span>
+                    </label>
+                    <input autofocus type="text" name="username" placeholder="아이디" class="input input-bordered"
+                           maxlength="50">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">비밀번호</span>
+                    </label>
+                    <input type="password" name="password"
+                           placeholder="비밀번호" class="input input-bordered" maxlength="50">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">이메일</span>
+                    </label>
+                    <input type="email" name="email" placeholder="이메일" class="input input-bordered" maxlength="50">
+                </div>
+
+                <div class="grid grid-cols-2 mt-2 gap-2">
+                    <a href="/member/login" class="btn btn-secondary btn-outline">로그인</a>
+                    <input class="btn btn-primary" type="submit" value="회원가입">
+                </div>
+
+                <div class="flex justify-center">
+                    <a href="/member/findUsername" class="btn btn-link">아이디찾기</a>
+                    <a href="/member/findPassword" class="btn btn-link">비밀번호 찾기</a>
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+</main>
+</body>
+</html>

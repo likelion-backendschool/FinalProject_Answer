@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>도서 수정</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-write container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-eraser"></i> 도서 수정
+            </h1>
+
+            <script>
+                let ProductModify__submitDone = false;
+
+                function ProductModify__submit(form) {
+                    if (ProductModify__submitDone) {
+                        return;
+                    }
+
+                    form.subject.value = form.subject.value.trim();
+
+                    if (form.subject.value.length == 0) {
+                        warningModal("제목을 입력해주세요.");
+                        form.subject.focus();
+
+                        return;
+                    }
+
+                    form.postTagContents.value = form.postTagContents.value.trim();
+
+                    if (form.postTagContents.value.length == 0) {
+                        warningModal("태그를 입력해주세요.");
+                        form.postTagContents.focus();
+
+                        return;
+                    }
+
+                    const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
+                    const markdown = editor.getMarkdown().trim();
+                    const html = editor.getHTML().trim();
+
+                    form.content.value = markdown;
+                    form.contentHtml.value = html;
+
+                    if (form.content.value.length == 0 || form.contentHtml.value.length == 0) {
+                        warningModal("내용을 입력해주세요");
+                        editor.focus();
+                        return;
+                    }
+
+                    form.submit();
+                    ProductModify__submitDone = true;
+                }
+            </script>
+
+
+            <form th:action method="POST" class="flex flex-col gap-3"
+                  onsubmit="ProductModify__submit(this); return false;">
+
+                <input type="hidden" name="content">
+                <input type="hidden" name="contentHtml">
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">번호</span>
+                    </label>
+
+                    <div class="badge" th:text="${product.id}"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">날짜</span>
+                    </label>
+                    <div class="flex flex-wrap gap-2">
+
+                        <div class="badge">
+                            <i class="fa-solid fa-pen"></i>
+                            <span class="ml-1">작성</span>
+                            <span class="ml-1"
+                                  th:text="${#temporals.format(product.createDate, 'yy-MM-dd HH:mm')}"></span>
+                        </div>
+                        <div class="badge badge-outline">
+                            <i class="fa-solid fa-eraser"></i>
+                            <span class="ml-1">수정</span>
+                            <span class="ml-1"
+                                  th:text="${#temporals.format(product.modifyDate, 'yy-MM-dd HH:mm')}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">글 태그</span>
+                    </label>
+                    <div class="badge" th:text="${product.postKeyword.content}"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">제목</span>
+                    </label>
+                    <input autofocus type="text" name="subject" placeholder="제목" class="input input-bordered"
+                           maxlength="50" th:value="${product.subject}">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">가격</span>
+                    </label>
+                    <input autofocus type="text" name="price" placeholder="가격" class="input input-bordered"
+                           maxlength="50" th:value="${product.price}">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">태그</span>
+                    </label>
+                    <input type="text" name="productTagContents" placeholder="#태그1 #태그2 #태그3 ..."
+                           class="input input-bordered"
+                           maxlength="50" th:value="${product.getExtra_inputValue_hashTagContents}">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">이미지</span>
+                    </label>
+
+                    <svg width="300" height="300" th:data-jdenticon-value="${product.jdenticon}"></svg>
+                </div>
+
+                <div class="grid grid-cols-2 mt-2 gap-2">
+                    <button type="button" onclick="history.back();" class="btn btn-secondary btn-outline">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span class="ml-1">취소</span>
+                    </button>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-eraser"></i>
+                        <span class="ml-1">수정</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <th:block th:replace="fragment/toastEditor :: toastEditor"></th:block>
+
+</main>
+</body>
+</html>

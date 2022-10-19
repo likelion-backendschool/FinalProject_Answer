@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>작가 시작</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-login flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-md w-full px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-lock"></i>
+
+                작가 시작
+            </h1>
+
+            <script>
+                let MemberBeAuthor__submitDone = false;
+
+                function MemberBeAuthor__submit(form) {
+                    if (MemberBeAuthor__submitDone) {
+                        return;
+                    }
+
+                    form.nickname.value = form.nickname.value.trim();
+
+                    if (form.nickname.value.length == 0) {
+                        warningModal("필명을 입력해주세요.");
+                        form.nickname.focus();
+
+                        return;
+                    }
+
+                    form.submit();
+                    MemberBeAuthor__submitDone = true;
+                }
+            </script>
+
+
+            <form th:action method="POST" class="flex flex-col gap-3"
+                  onsubmit="MemberBeAuthor__submit(this); return false;">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">필명</span>
+                    </label>
+                    <input type="text" name="nickname"
+                           placeholder="필명" class="input input-bordered" maxlength="50">
+                </div>
+
+                <input class="btn btn-primary" type="submit" value="작가 활동 시작">
+            </form>
+        </div>
+
+    </section>
+
+</main>
+</body>
+</html>
