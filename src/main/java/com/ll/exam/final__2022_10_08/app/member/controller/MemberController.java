@@ -75,7 +75,7 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/findPassword")
     public String findPassword(String username, String email, Model model) {
-        Member member = memberService.findByUsernameAndEmail(username, email);
+        Member member = memberService.findByUsernameAndEmail(username, email).orElse(null);
 
         if (member == null) {
             return rq.historyBack("일치하는 회원이 존재하지 않습니다.");

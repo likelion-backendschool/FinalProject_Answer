@@ -68,8 +68,8 @@ public class MemberService {
         return RsData.of("S-1", "이메일인증이 완료되었습니다.");
     }
 
-    public Member findByUsernameAndEmail(String username, String email) {
-        return memberRepository.findByUsernameAndEmail(username, email).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+    public Optional<Member> findByUsernameAndEmail(String username, String email) {
+        return memberRepository.findByUsernameAndEmail(username, email);
     }
 
     public Optional<Member> findByEmail(String email) {

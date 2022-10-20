@@ -85,7 +85,7 @@
                 </span>
             </a>
 
-            <a href="/product/create" class="inline-flex" sec:authorize="isAuthenticated()">
+            <a href="/product/create" class="inline-flex" th:if="${@rq.hasAuthority('AUTHOR')}">
                 <i class="fa-solid fa-book-medical"></i>
                 <span class="ml-[2px] hidden lg:block">
                     도서 등록

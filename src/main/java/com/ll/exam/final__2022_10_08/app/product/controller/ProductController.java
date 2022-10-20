@@ -32,7 +32,7 @@ public class ProductController {
     private final PostKeywordService postKeywordService;
     private final Rq rq;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
     @GetMapping("/create")
     public String showCreate(Model model) {
         List<PostKeyword> postKeywords = postKeywordService.findByMemberId(rq.getId());
@@ -40,7 +40,7 @@ public class ProductController {
         return "product/create";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
     @PostMapping("/create")
     public String create(@Valid ProductForm productForm) {
         Member author = rq.getMember();
