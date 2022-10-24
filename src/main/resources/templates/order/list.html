@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>주문 목록</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-order-list container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-basket-shopping"></i>
+                주문 목록
+            </h1>
+
+            <div class="mt-2">
+                <ul class="grid grid-cols-1 gap-10">
+                    <li th:each="order : ${orders}">
+                        <th:block th:replace="fragment/orderListItem :: orderListItem" ></th:block>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

@@ -34,7 +34,7 @@
                                 <i class="fa-solid fa-pen"></i>
                                 <span class="ml-1">작성</span>
                                 <span class="ml-1"
-                                      th:text="${#temporals.format(product.createDate, 'yy-MM-dd HH:mm')}"></span>
+                                      th:text="${#temporals.format(product.createDate, 'yy-MM-dd')}"></span>
                             </div>
                         </div>
 
@@ -43,7 +43,7 @@
                                 <i class="fa-solid fa-eraser"></i>
                                 <span class="ml-1">수정</span>
                                 <span class="ml-1"
-                                      th:text="${#temporals.format(product.modifyDate, 'yy-MM-dd HH:mm')}"></span>
+                                      th:text="${#temporals.format(product.modifyDate, 'yy-MM-dd')}"></span>
                             </div>
                         </div>
                     </div>
@@ -71,6 +71,20 @@
                         <i class="fa-solid fa-angle-left"></i>
                         <span class="ml-1">이전</span>
                     </button>
+
+                    <a th:if="${!product.extra_actor_hasInCart}" href="javascript:;" onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                        <i class="fa-solid fa-cart-plus"></i>
+                        <span class="ml-2">장바구니</span>
+                    </a>
+                    <form th:action="@{|/cart/addItem/${product.id}|}" method="POST" hidden></form>
+
+                    <a th:if="${product.extra_actor_hasInCart}" href="javascript:;" onclick="$(this).next().submit();" class="btn btn-sm">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span class="ml-2">장바구니</span>
+                    </a>
+                    <form th:action="@{|/cart/removeItem/${product.id}|}" method="POST" hidden></form>
+
+
                 </div>
 
                 <div class="flex justify-center">
