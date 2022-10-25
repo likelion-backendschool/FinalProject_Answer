@@ -134,11 +134,11 @@
 
                         <form th:action="@{|/order/${order.id}/cancel|}" method="POST" hidden></form>
 
-                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"
-                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
-                            <i class="fa-solid fa-cart-plus"></i>
-                            <span class="ml-2">환불</span>
-                        </a>
+<!--                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"-->
+<!--                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">-->
+<!--                            <i class="fa-solid fa-cart-plus"></i>-->
+<!--                            <span class="ml-2">환불</span>-->
+<!--                        </a>-->
                         <form th:action="@{|/order/${order.id}/refund|}" method="POST" hidden></form>
 
                         <a th:if="${@orderService.actorCanRefund(@rq.member, order).getResultCode().equals('F-3')}"

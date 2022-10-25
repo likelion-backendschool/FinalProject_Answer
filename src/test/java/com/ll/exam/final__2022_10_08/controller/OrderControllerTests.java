@@ -87,7 +87,7 @@ public class OrderControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(handler().handlerType(OrderController.class))
                 .andExpect(handler().methodName("cancel"))
-                .andExpect(redirectedUrlPattern("/order/list?msg=**"));
+                .andExpect(redirectedUrlPattern("/order/%d?msg=**".formatted(id)));
     }
 
     @Test
@@ -109,6 +109,6 @@ public class OrderControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(handler().handlerType(OrderController.class))
                 .andExpect(handler().methodName("refund"))
-                .andExpect(redirectedUrlPattern("/order/list?msg=**"));
+                .andExpect(redirectedUrlPattern("/order/%d?msg=**".formatted(id)));
     }
 }

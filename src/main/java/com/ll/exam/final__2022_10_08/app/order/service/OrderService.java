@@ -136,6 +136,10 @@ public class OrderService {
             return RsData.of("F-4", "이미 환불되었습니다.");
         }
 
+        if ( order.isPaid() == false ) {
+            return RsData.of("F-5", "결제가 되어야 환불이 가능합니다.");
+        }
+
         if (actor.getId().equals(order.getBuyer().getId()) == false) {
             return RsData.of("F-2", "권한이 없습니다.");
         }
