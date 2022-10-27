@@ -16,15 +16,24 @@ public class MyBookService {
 
     @Transactional
     public RsData add(Order order) {
-        order.getOrderItems().forEach(orderItem -> {
-            MyBook book = MyBook.builder()
-                    .owner(order.getBuyer())
-                    .orderItem(orderItem)
-                    .product(orderItem.getProduct())
-                    .build();
-            myBookRepository.save(book);
-        });
+        order.getOrderItems()
+                .stream()
+                .map(orderItem -> MyBook.builder()
+                        .owner(order.getBuyer())
+                        .orderItem(orderItem)
+                        .product(orderItem.getProduct())
+                        .build())
+                .forEach(myBookRepository::save);
 
         return RsData.of("S-1", "나의 책장에 추가되었습니다.");
+    }
+
+    @Transactional
+    public RsData remove(Order order) {
+        order.getOrderItems()
+                .stream()
+                .forEach(orderItem -> myBookRepository.deleteAllByProductIdAndOwnerId(orderItem.getProduct().getId(), order.getBuyer().getId()));
+
+        return RsData.of("S-1", "나의 책장에서 제거되었습니다.");
     }
 }

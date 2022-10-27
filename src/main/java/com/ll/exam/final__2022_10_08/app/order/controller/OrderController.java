@@ -15,6 +15,7 @@ import com.ll.exam.final__2022_10_08.app.order.service.OrderService;
 import com.ll.exam.final__2022_10_08.app.security.dto.MemberContext;
 import com.ll.exam.final__2022_10_08.util.Ut;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -96,7 +97,8 @@ public class OrderController {
         });
     }
 
-    private final String SECRET_KEY = "test_sk_jkYG57Eba3GgM1wB0a53pWDOxmA1";
+    @Value("${custom.tossPayments.secretKey}")
+    private String SECRET_KEY;
 
     @RequestMapping("/{id}/success")
     public String confirmPayment(
@@ -142,7 +144,10 @@ public class OrderController {
 
             orderService.payByTossPayments(order, payPriceRestCash);
 
-            return "redirect:/order/%d?msg=%s".formatted(order.getId(), Ut.url.encode("결제가 완료되었습니다."));
+            return Rq.redirectWithMsg(
+                    "/order/%d".formatted(order.getId()),
+                    "%d번 주문이 결제처리되었습니다.".formatted(order.getId())
+            );
         } else {
             JsonNode failNode = responseEntity.getBody();
             model.addAttribute("message", failNode.get("message").asText());
@@ -163,9 +168,11 @@ public class OrderController {
     public String create(@AuthenticationPrincipal MemberContext memberContext) {
         Member member = memberContext.getMember();
         Order order = orderService.createFromCart(member);
-        String redirect = "redirect:/order/%d".formatted(order.getId()) + "?msg=" + Ut.url.encode("%d번 주문이 생성되었습니다.".formatted(order.getId()));
 
-        return redirect;
+        return Rq.redirectWithMsg(
+                "/order/%d".formatted(order.getId()),
+                "%d번 주문이 생성되었습니다.".formatted(order.getId())
+        );
     }
 
     @GetMapping("/list")
@@ -183,10 +190,10 @@ public class OrderController {
         RsData rsData = orderService.cancel(orderId, rq.getMember());
 
         if (rsData.isFail()) {
-            return rq.redirectWithErrorMsg("/order/%d".formatted(orderId), rsData);
+            return Rq.redirectWithErrorMsg("/order/%d".formatted(orderId), rsData);
         }
 
-        return rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
+        return Rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
     }
 
     @PostMapping("/{orderId}/refund")
@@ -195,9 +202,9 @@ public class OrderController {
         RsData rsData = orderService.refund(orderId, rq.getMember());
 
         if (rsData.isFail()) {
-            return rq.redirectWithErrorMsg("/order/%d".formatted(orderId), rsData);
+            return Rq.redirectWithErrorMsg("/order/%d".formatted(orderId), rsData);
         }
 
-        return rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
+        return Rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
     }
 }

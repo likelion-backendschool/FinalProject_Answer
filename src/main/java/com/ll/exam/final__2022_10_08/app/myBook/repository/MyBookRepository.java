@@ -4,4 +4,5 @@ import com.ll.exam.final__2022_10_08.app.myBook.entity.MyBook;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MyBookRepository extends JpaRepository<MyBook, Long> {
+    void deleteAllByProductIdAndOwnerId(long productId, long ownerId);
 }

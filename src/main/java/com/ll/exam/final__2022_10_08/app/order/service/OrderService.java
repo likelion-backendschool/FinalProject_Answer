@@ -113,6 +113,8 @@ public class OrderService {
         order.setRefundDone();
         orderRepository.save(order);
 
+        myBookService.remove(order);
+
         return RsData.of("S-1", "환불되었습니다.");
     }
 

@@ -105,8 +105,8 @@
                             <input type="number" id="PaymentForm__useRestCash"
                                    th:placeholder="|￦ 0 ~ ￦ ${@ut.nf(maxUseRestCash)}|"
                                    class="input input-bordered min-w-[190px]" min="0" th:max="${maxUseRestCash}"
-                                   onkeydown="PaymentForm__useRestCashFix();"
-                                   onkeyup="PaymentForm__useRestCashFix();"
+                                   onkeydown="PaymentForm__updateForm();"
+                                   onkeyup="PaymentForm__updateForm();"
                             >
 
                             <label class="flex items-center gap-2">
@@ -128,23 +128,33 @@
 
                         <a th:if="${@orderService.actorCanCancel(@rq.member, order).isSuccess()}" href="javascript:;"
                            onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
-                            <i class="fa-solid fa-cart-plus"></i>
+                            <i class="fa-solid fa-xmark"></i>
                             <span class="ml-2">취소</span>
                         </a>
 
                         <form th:action="@{|/order/${order.id}/cancel|}" method="POST" hidden></form>
 
-<!--                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"-->
-<!--                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">-->
-<!--                            <i class="fa-solid fa-cart-plus"></i>-->
-<!--                            <span class="ml-2">환불</span>-->
-<!--                        </a>-->
+                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"
+                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="ml-2">환불</span>
+                        </a>
                         <form th:action="@{|/order/${order.id}/refund|}" method="POST" hidden></form>
 
                         <a th:if="${@orderService.actorCanRefund(@rq.member, order).getResultCode().equals('F-3')}"
                            class="btn btn-sm btn-outline btn-primary btn-disabled">
-                            <i class="fa-solid fa-cart-plus"></i>
+                            <i class="fa-solid fa-xmark"></i>
                             <span class="ml-2">환불가능시간이 지났습니다</span>
+                        </a>
+
+                        <a th:if="${order.isCanceled()}"
+                           class="btn btn-sm btn-outline btn-primary btn-disabled">
+                            <span class="ml-2">취소된 주문 입니다.</span>
+                        </a>
+
+                        <a th:if="${order.isRefunded()}"
+                           class="btn btn-sm btn-outline btn-primary btn-disabled">
+                            <span class="ml-2">환불된 주문입니다.</span>
                         </a>
                     </div>
                 </div>
@@ -188,7 +198,7 @@
     </script>
 
     <script>
-        function PaymentForm__useRestCashFix() {
+        function PaymentForm__updateForm() {
             let useRestCash = parseInt($PaymentForm__useRestCash.val());
 
             if (isNaN(useRestCash)) {
@@ -221,10 +231,10 @@
                 $PaymentForm__useRestCash.val(0);
             }
 
-            PaymentForm__useRestCashFix();
+            PaymentForm__updateForm();
         }
 
-        PaymentForm__useRestCashFix();
+        PaymentForm__updateForm();
     </script>
 
 </main>
