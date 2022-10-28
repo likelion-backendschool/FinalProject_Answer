@@ -75,11 +75,32 @@ public class OrderService {
     }
 
     @Transactional
+    public RsData payByTossPayments(Order order, long useRestCash) {
+        Member buyer = order.getBuyer();
+        long restCash = buyer.getRestCash();
+        int payPrice = order.calculatePayPrice();
+
+        long pgPayPrice = payPrice - useRestCash;
+        memberService.addCash(buyer, pgPayPrice, "주문__%d__충전__토스페이먼츠".formatted(order.getId()));
+        memberService.addCash(buyer, pgPayPrice * -1, "주문__%d__사용__토스페이먼츠".formatted(order.getId()));
+
+        if (useRestCash > 0) {
+            if ( useRestCash > restCash ) {
+                throw new RuntimeException("예치금이 부족합니다.");
+            }
+
+            memberService.addCash(buyer, useRestCash * -1, "주문__%d__사용__예치금".formatted(order.getId()));
+        }
+
+        payDone(order);
+
+        return RsData.of("S-1", "결제가 완료되었습니다.");
+    }
+
+    @Transactional
     public RsData payByRestCashOnly(Order order) {
         Member buyer = order.getBuyer();
-
         long restCash = buyer.getRestCash();
-
         int payPrice = order.calculatePayPrice();
 
         if (payPrice > restCash) {
@@ -88,13 +109,15 @@ public class OrderService {
 
         memberService.addCash(buyer, payPrice * -1, "주문__%d__사용__예치금".formatted(order.getId()));
 
-        order.setPaymentDone();
-
-        myBookService.add(order);
-
-        orderRepository.save(order);
+        payDone(order);
 
         return RsData.of("S-1", "결제가 완료되었습니다.");
+    }
+
+    private void payDone(Order order) {
+        order.setPaymentDone();
+        myBookService.add(order);
+        orderRepository.save(order);
     }
 
     @Transactional
@@ -165,26 +188,6 @@ public class OrderService {
 
     public boolean actorCanSee(Member actor, Order order) {
         return actor.getId().equals(order.getBuyer().getId());
-    }
-
-    @Transactional
-    public RsData payByTossPayments(Order order, long useRestCash) {
-        Member buyer = order.getBuyer();
-        int payPrice = order.calculatePayPrice();
-
-        long pgPayPrice = payPrice - useRestCash;
-        memberService.addCash(buyer, pgPayPrice, "주문__%d__충전__토스페이먼츠".formatted(order.getId()));
-        memberService.addCash(buyer, pgPayPrice * -1, "주문__%d__사용__토스페이먼츠".formatted(order.getId()));
-
-        if (useRestCash > 0) {
-            memberService.addCash(buyer, useRestCash * -1, "주문__%d__사용__예치금".formatted(order.getId()));
-        }
-
-        order.setPaymentDone();
-        orderRepository.save(order);
-        myBookService.add(order);
-
-        return RsData.of("S-1", "결제가 완료되었습니다.");
     }
 
     public boolean actorCanPayment(Member actor, Order order) {
