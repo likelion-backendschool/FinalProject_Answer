@@ -1,5 +1,7 @@
 package com.ll.exam.final__2022_10_08.app.product.service;
 
+import com.ll.exam.final__2022_10_08.app.cart.entity.CartItem;
+import com.ll.exam.final__2022_10_08.app.cart.service.CartService;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
 import com.ll.exam.final__2022_10_08.app.post.entity.Post;
 import com.ll.exam.final__2022_10_08.app.postTag.entity.PostTag;
@@ -19,8 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +31,7 @@ public class ProductService {
     private final PostKeywordService postKeywordService;
     private final ProductTagService productTagService;
     private final PostTagService postTagService;
+    private final CartService cartService;
 
     @Transactional
     public Product create(Member author, String subject, int price, long postKeywordId, String productTagContents) {
@@ -83,14 +85,12 @@ public class ProductService {
         return productRepository.findAllByOrderByIdDesc();
     }
 
-    public Optional<Product> findForPrintById(long id) {
+    public Optional<Product> findForPrintById(long id, Member actor) {
         Optional<Product> opProduct = findById(id);
 
         if (opProduct.isEmpty()) return opProduct;
 
-        List<ProductTag> productTags = getProductTags(opProduct.get());
-
-        opProduct.get().getExtra().put("productTags", productTags);
+        loadForPrintData(opProduct.get(), actor);
 
         return opProduct;
     }
@@ -116,6 +116,10 @@ public class ProductService {
         loadForPrintData(products, actor);
     }
 
+    private void loadForPrintData(Product product, Member actor) {
+        loadForPrintData(List.of(product), actor);
+    }
+
     private void loadForPrintData(List<Product> products, Member actor) {
         long[] ids = products
                 .stream()
@@ -123,6 +127,25 @@ public class ProductService {
                 .toArray();
 
         List<ProductTag> productTagsByProductIds = productTagService.getProductTagsByProductIdIn(ids);
+
+        // 현재 로그인 되어 있고
+        // 장바구니에 이미 추가되었는지
+
+        if (actor != null) {
+            List<CartItem> cartItems = cartService.getCartItemsByBuyerIdProductIdIn(actor.getId(), ids);
+
+            Map<Long, CartItem> cartItemsByProductIdMap = cartItems
+                    .stream()
+                    .collect(toMap(
+                            cartItem -> cartItem.getProduct().getId(),
+                            cartItem -> cartItem
+                    ));
+
+            products.stream()
+                    .filter(product -> cartItemsByProductIdMap.containsKey(product.getId()))
+                    .map(product -> cartItemsByProductIdMap.get(product.getId()))
+                    .forEach(cartItem -> cartItem.getProduct().getExtra().put("actor_cartItem", cartItem));
+        }
 
         Map<Long, List<ProductTag>> productTagsByProductIdMap = productTagsByProductIds.stream()
                 .collect(groupingBy(

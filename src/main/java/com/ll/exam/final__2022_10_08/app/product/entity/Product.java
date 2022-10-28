@@ -1,6 +1,7 @@
 package com.ll.exam.final__2022_10_08.app.product.entity;
 
 import com.ll.exam.final__2022_10_08.app.base.entity.BaseEntity;
+import com.ll.exam.final__2022_10_08.app.cart.entity.CartItem;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
 import com.ll.exam.final__2022_10_08.app.postkeyword.entity.PostKeyword;
 import com.ll.exam.final__2022_10_08.app.productTag.entity.ProductTag;
@@ -96,5 +97,19 @@ public class Product extends BaseEntity {
                 })
                 .sorted()
                 .collect(Collectors.joining(" "));
+    }
+
+    public CartItem getExtra_actor_cartItem() {
+        Map<String, Object> extra = getExtra();
+
+        if (extra.containsKey("actor_cartItem") == false) {
+            return null;
+        }
+
+        return (CartItem)extra.get("actor_cartItem");
+    }
+
+    public boolean getExtra_actor_hasInCart() {
+        return getExtra_actor_cartItem() != null;
     }
 }

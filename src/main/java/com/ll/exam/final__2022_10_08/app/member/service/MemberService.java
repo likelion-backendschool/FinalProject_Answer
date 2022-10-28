@@ -2,18 +2,23 @@ package com.ll.exam.final__2022_10_08.app.member.service;
 
 import com.ll.exam.final__2022_10_08.app.AppConfig;
 import com.ll.exam.final__2022_10_08.app.base.dto.RsData;
+import com.ll.exam.final__2022_10_08.app.cash.entity.CashLog;
+import com.ll.exam.final__2022_10_08.app.cash.service.CashService;
 import com.ll.exam.final__2022_10_08.app.email.service.EmailService;
 import com.ll.exam.final__2022_10_08.app.emailVerification.service.EmailVerificationService;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
+import com.ll.exam.final__2022_10_08.app.member.entity.emum.AuthLevel;
 import com.ll.exam.final__2022_10_08.app.member.exception.AlreadyJoinException;
 import com.ll.exam.final__2022_10_08.app.member.repository.MemberRepository;
 import com.ll.exam.final__2022_10_08.app.security.dto.MemberContext;
 import com.ll.exam.final__2022_10_08.util.Ut;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +28,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
     private final EmailService emailService;
+    private final CashService cashService;
 
     @Transactional
     public Member join(String username, String password, String email, String nickname) {
@@ -41,14 +48,22 @@ public class MemberService {
                 .password(passwordEncoder.encode(password))
                 .email(email)
                 .nickname(nickname)
+                .authLevel(AuthLevel.NORMAL)
                 .build();
 
         memberRepository.save(member);
 
-        emailVerificationService.send(member);
+        emailVerificationService.send(member)
+                .addCallback(
+                        sendRsData -> {
+                            // 성공시 처리
+                        },
+                        error -> log.error(error.getMessage())
+                );
 
         return member;
     }
+
 
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
@@ -140,5 +155,35 @@ public class MemberService {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
+    }
+
+    @Transactional
+    public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
+        CashLog cashLog = cashService.addCash(member, price, eventType);
+
+        long newRestCash = member.getRestCash() + cashLog.getPrice();
+        member.setRestCash(newRestCash);
+        memberRepository.save(member);
+
+        return RsData.of(
+                "S-1",
+                "성공",
+                new AddCashRsDataBody(cashLog, newRestCash)
+        );
+    }
+
+    public Optional<Member> findById(long id) {
+        return memberRepository.findById(id);
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class AddCashRsDataBody {
+        CashLog cashLog;
+        long newRestCash;
+    }
+
+    public long getRestCash(Member member) {
+        return memberRepository.findById(member.getId()).get().getRestCash();
     }
 }
