@@ -52,7 +52,7 @@ public class CartController {
     public String removeItem(@PathVariable long productId) {
         cartService.removeItem(rq.getMember(), new Product((productId)));
 
-        return rq.redirectToBackWithMsg("장바구니에 삭제되었습니다.");
+        return rq.redirectToBackWithMsg("장바구니에서 삭제되었습니다.");
     }
 
     @PostMapping("/removeItems")
