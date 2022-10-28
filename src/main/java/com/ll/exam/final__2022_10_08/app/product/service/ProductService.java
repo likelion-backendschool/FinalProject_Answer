@@ -131,7 +131,7 @@ public class ProductService {
         // 현재 로그인 되어 있고
         // 장바구니에 이미 추가되었는지
 
-        if ( actor != null ) {
+        if (actor != null) {
             List<CartItem> cartItems = cartService.getCartItemsByBuyerIdProductIdIn(actor.getId(), ids);
 
             Map<Long, CartItem> cartItemsByProductIdMap = cartItems
@@ -141,13 +141,10 @@ public class ProductService {
                             cartItem -> cartItem
                     ));
 
-            products.stream().forEach(product -> {
-                CartItem cartItem = cartItemsByProductIdMap.get(product.getId());
-
-                if (cartItem == null) return;
-
-                product.getExtra().put("actor_cartItem", cartItem);
-            });
+            products.stream()
+                    .filter(product -> cartItemsByProductIdMap.containsKey(product.getId()))
+                    .map(product -> cartItemsByProductIdMap.get(product.getId()))
+                    .forEach(cartItem -> cartItem.getProduct().getExtra().put("actor_cartItem", cartItem));
         }
 
         Map<Long, List<ProductTag>> productTagsByProductIdMap = productTagsByProductIds.stream()
