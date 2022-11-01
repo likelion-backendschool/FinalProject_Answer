@@ -4,6 +4,7 @@ package com.ll.exam.final__2022_10_08.app.member.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.exam.final__2022_10_08.app.base.entity.BaseEntity;
 import com.ll.exam.final__2022_10_08.app.member.entity.emum.AuthLevel;
+import com.ll.exam.final__2022_10_08.util.Ut;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,8 +14,10 @@ import org.springframework.util.StringUtils;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Setter
@@ -35,6 +38,52 @@ public class Member extends BaseEntity {
 
     @Convert(converter = AuthLevel.Converter.class)
     private AuthLevel authLevel;
+
+    @Column(columnDefinition = "TEXT")
+    private String accessToken;
+
+    public static Member fromMap(Map<String, Object> map) {
+        return fromJwtClaims(map);
+    }
+
+    public static Member fromJwtClaims(Map<String, Object> jwtClaims) {
+        long id = 0;
+
+        if (jwtClaims.get("id") instanceof Long) {
+            id = (long) jwtClaims.get("id");
+        } else if (jwtClaims.get("id") instanceof Integer) {
+            id = (long) (int) jwtClaims.get("id");
+        }
+
+        LocalDateTime createDate = null;
+        LocalDateTime modifyDate = null;
+
+        if (jwtClaims.get("createDate") instanceof List) {
+            createDate = Ut.date.bitsToLocalDateTime((List<Integer>) jwtClaims.get("createDate"));
+        }
+
+        if (jwtClaims.get("modifyDate") instanceof List) {
+            modifyDate = Ut.date.bitsToLocalDateTime((List<Integer>) jwtClaims.get("modifyDate"));
+        }
+
+        String username = (String) jwtClaims.get("username");
+        String email = (String) jwtClaims.get("email");
+        boolean emailVerified = (boolean) jwtClaims.get("emailVerified");
+        AuthLevel authLevel = (AuthLevel) jwtClaims.get("authLevel");
+        String accessToken = (String) jwtClaims.get("accessToken");
+
+        return Member
+                .builder()
+                .id(id)
+                .createDate(createDate)
+                .modifyDate(modifyDate)
+                .username(username)
+                .email(email)
+                .emailVerified(emailVerified)
+                .authLevel(authLevel)
+                .accessToken(accessToken)
+                .build();
+    }
 
     public String getName() {
         if (nickname != null) {
@@ -66,5 +115,36 @@ public class Member extends BaseEntity {
         }
 
         return authorities;
+    }
+
+    @JsonIgnore
+    public Map<String, Object> getAccessTokenClaims() {
+        return Ut.mapOf(
+                "id", getId(),
+                "createDate", getCreateDate(),
+                "modifyDate", getModifyDate(),
+                "username", getUsername(),
+                "email", getEmail(),
+                "emailVerified", isEmailVerified(),
+                "nickname", getNickname(),
+                "authLevel", getAuthLevel(),
+                "authorities", genAuthorities()
+        );
+    }
+
+    @JsonIgnore
+    public Map<String, Object> toMap() {
+        return Ut.mapOf(
+                "id", getId(),
+                "createDate", getCreateDate(),
+                "modifyDate", getModifyDate(),
+                "username", getUsername(),
+                "email", getEmail(),
+                "emailVerified", isEmailVerified(),
+                "nickname", getNickname(),
+                "authLevel", getAuthLevel(),
+                "authorities", genAuthorities(),
+                "accessToken", getAccessToken()
+        );
     }
 }

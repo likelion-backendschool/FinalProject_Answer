@@ -22,16 +22,4 @@ public class CashService {
 
         return cashLog;
     }
-
-    public CashLog removeCash(Member member, long price, String eventType) {
-        CashLog cashLog = CashLog.builder()
-                .member(member)
-                .price(price * -1)
-                .eventType(eventType)
-                .build();
-
-        cashLogRepository.save(cashLog);
-
-        return cashLog;
-    }
 }

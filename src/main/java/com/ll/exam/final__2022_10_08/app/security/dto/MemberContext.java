@@ -21,7 +21,7 @@ public class MemberContext extends User {
     private final AuthLevel authLevel;
 
     public MemberContext(Member member, List<GrantedAuthority> authorities) {
-        super(member.getUsername(), member.getPassword(), authorities);
+        super(member.getUsername(), member.getPassword() != null ? member.getPassword() : "", authorities);
         this.id = member.getId();
         this.createDate = member.getCreateDate();
         this.modifyDate = member.getModifyDate();

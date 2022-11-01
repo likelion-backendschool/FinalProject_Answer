@@ -40,7 +40,7 @@ public class MemberServiceTests {
     @Test
     @DisplayName("회원가입을 하면 일반회원이 된다.")
     void t2() {
-        Member member = memberService.findById(1L).get();
+        Member member = memberService.findById(2L).get();
 
         assertThat(member.getAuthLevel().getCode()).isEqualTo(3);
         assertThat(member.getAuthLevel().getValue()).isEqualTo("NORMAL");

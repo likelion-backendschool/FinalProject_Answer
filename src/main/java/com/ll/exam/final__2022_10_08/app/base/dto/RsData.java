@@ -17,7 +17,7 @@ public class RsData<T> {
         return new RsData<>(resultCode, msg, data);
     }
 
-    public static <T> RsData<T> of(String resultCode, String msg) {
+    public static RsData of(String resultCode, String msg) {
         return of(resultCode, msg, null);
     }
 
