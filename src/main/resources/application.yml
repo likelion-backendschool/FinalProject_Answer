@@ -5,6 +5,12 @@ spring:
       - base-addi
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
+  batch:
+    job:
+      names: ${job.name:NONE}
+      enabled: false
+    jdbc:
+      initialize-schema: ALWAYS
   jpa:
     properties:
       hibernate:
@@ -29,6 +35,10 @@ logging:
     com.ll.exam.final__2022_10_08.app: debug
     org.hibernate.type.descriptor.sql: trace
 custom:
+  order:
+    cancelAvailableSeconds: 600
+  rebate:
+    wholesalePriceRate: 0.5
   site:
     name: M-BOOKS
     baseUrl: "http://localhost:8010"

@@ -23,9 +23,25 @@ public class AppConfig {
     @Getter
     private static String siteBaseUrl;
 
+    @Getter
+    public static double wholesalePriceRate;
+
+    @Getter
+    public static int cancelAvailableSeconds;
+
     @Autowired
     public void setContext(ApplicationContext context) {
         AppConfig.context = context;
+    }
+
+    @Value("${custom.rebate.wholesalePriceRate}")
+    public void setWholesalePriceRate(double value) {
+        wholesalePriceRate = value;
+    }
+
+    @Value("${custom.order.cancelAvailableSeconds}")
+    public void setCancelAvailableSeconds(String value) {
+        cancelAvailableSeconds = Integer.valueOf(value);
     }
 
     @Value("${spring.profiles.active:}")

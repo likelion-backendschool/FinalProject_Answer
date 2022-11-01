@@ -24,7 +24,6 @@ import static javax.persistence.FetchType.LAZY;
 @ToString(callSuper = true)
 public class MyBook extends BaseEntity {
     @ManyToOne(fetch = LAZY)
-    @ToString.Exclude
     private Member owner;
 
     @ManyToOne(fetch = LAZY)

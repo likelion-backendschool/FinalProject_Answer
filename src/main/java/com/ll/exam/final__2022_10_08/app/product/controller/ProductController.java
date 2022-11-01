@@ -5,8 +5,8 @@ import com.ll.exam.final__2022_10_08.app.base.exception.ActorCanNotRemoveExcepti
 import com.ll.exam.final__2022_10_08.app.base.rq.Rq;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
 import com.ll.exam.final__2022_10_08.app.post.entity.Post;
-import com.ll.exam.final__2022_10_08.app.postkeyword.entity.PostKeyword;
-import com.ll.exam.final__2022_10_08.app.postkeyword.service.PostKeywordService;
+import com.ll.exam.final__2022_10_08.app.postKeyword.entity.PostKeyword;
+import com.ll.exam.final__2022_10_08.app.postKeyword.service.PostKeywordService;
 import com.ll.exam.final__2022_10_08.app.product.entity.Product;
 import com.ll.exam.final__2022_10_08.app.product.form.ProductForm;
 import com.ll.exam.final__2022_10_08.app.product.form.ProductModifyForm;
