@@ -23,7 +23,7 @@ public class ProductDto {
                 .createDate(product.getCreateDate())
                 .modifyDate(product.getModifyDate())
                 .authorId(product.getAuthor().getId())
-                .authorName(product.getAuthor().getNickname())
+                .authorName(product.getAuthor().getName())
                 .subject(product.getSubject())
                 .build();
     }

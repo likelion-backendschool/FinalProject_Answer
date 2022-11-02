@@ -5,6 +5,7 @@ import com.ll.exam.final__2022_10_08.app.base.rq.Rq;
 import com.ll.exam.final__2022_10_08.app.member.dto.LoginRequest;
 import com.ll.exam.final__2022_10_08.app.member.dto.LoginResponse;
 import com.ll.exam.final__2022_10_08.app.member.dto.MeResponse;
+import com.ll.exam.final__2022_10_08.app.member.dto.MemberDto;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
 import com.ll.exam.final__2022_10_08.app.member.service.MemberService;
 import com.ll.exam.final__2022_10_08.util.Ut;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -64,7 +66,7 @@ public class ApiV1MemberController {
         );
     }
 
-    @GetMapping("/me")
+    @GetMapping(value = "/me", consumes = ALL_VALUE)
     public ResponseEntity<RsData<MeResponse>> me() {
         if (rq.isLogout()) { // 임시코드, 나중에는 시프링 시큐리티를 이용해서 로그인을 안했다면, 아예 여기로 못 들어오도록
             return Ut.sp.responseEntityOf(
@@ -76,7 +78,7 @@ public class ApiV1MemberController {
 
         return Ut.sp.responseEntityOf(
                 RsData.successOf(
-                        MeResponse.of(rq.getMember())
+                        new MeResponse(MemberDto.of(rq.getMember()))
                 )
         );
     }

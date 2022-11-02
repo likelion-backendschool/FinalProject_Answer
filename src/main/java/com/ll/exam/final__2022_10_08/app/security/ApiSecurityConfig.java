@@ -57,7 +57,6 @@ public class ApiSecurityConfig {
 
         corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();

@@ -58,11 +58,18 @@ public class Member extends BaseEntity {
         LocalDateTime createDate = null;
         LocalDateTime modifyDate = null;
 
-        if (jwtClaims.get("createDate") instanceof List) {
+
+        if (jwtClaims.get("createDate") instanceof LocalDateTime) {
+            createDate = (LocalDateTime) jwtClaims.get("createDate");
+        }
+        else if (jwtClaims.get("createDate") instanceof List) {
             createDate = Ut.date.bitsToLocalDateTime((List<Integer>) jwtClaims.get("createDate"));
         }
 
-        if (jwtClaims.get("modifyDate") instanceof List) {
+        if (jwtClaims.get("modifyDate") instanceof LocalDateTime) {
+            modifyDate = (LocalDateTime) jwtClaims.get("modifyDate");
+        }
+        else if (jwtClaims.get("modifyDate") instanceof List) {
             modifyDate = Ut.date.bitsToLocalDateTime((List<Integer>) jwtClaims.get("modifyDate"));
         }
 
@@ -71,6 +78,7 @@ public class Member extends BaseEntity {
         boolean emailVerified = (boolean) jwtClaims.get("emailVerified");
         AuthLevel authLevel = (AuthLevel) jwtClaims.get("authLevel");
         String accessToken = (String) jwtClaims.get("accessToken");
+        String nickname = (String) jwtClaims.get("nickname");
 
         return Member
                 .builder()
@@ -82,6 +90,7 @@ public class Member extends BaseEntity {
                 .emailVerified(emailVerified)
                 .authLevel(authLevel)
                 .accessToken(accessToken)
+                .nickname(nickname)
                 .build();
     }
 

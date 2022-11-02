@@ -88,6 +88,7 @@ public class NotProdInitData {
             Product product2 = productService.create(member2, "상품명2", 40_000, "스프링부트", "#IT #REACT");
             Product product3 = productService.create(member1, "상품명3", 50_000, "REACT", "#IT #REACT");
             Product product4 = productService.create(member2, "상품명4", 60_000, "HTML", "#IT #HTML");
+            Product product5 = productService.create(member1, "상품명5", 70_000, "IT", "#IT #HTML");
 
             memberService.addCash(member1, 10_000, "충전__무통장입금");
             memberService.addCash(member1, 20_000, "충전__무통장입금");
@@ -112,7 +113,8 @@ public class NotProdInitData {
 
             Order order1 = helper.order(member1, Arrays.asList(
                             product1,
-                            product2
+                            product2,
+                            product5
                     )
             );
 
