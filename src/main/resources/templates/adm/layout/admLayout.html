@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+<head>
+
+</head>
+
+<header layout:fragment="header"
+        class="fixed z-40 top-0 left-0 w-full bg-white border-b-[1px] border-b-[color:#efefef] h-[35px] md:h-[50px]">
+    <div class="container mx-auto h-full flex items-center px-2">
+        <a href="/adm/home/main" class="logo flex font-bold mr-auto">
+            <span class="text-[#1E9EFE]">M</span>
+            <span class="ml-[2px]">ADMIN</span>
+        </a>
+
+        <div class="flex gap-4">
+            <a href="/adm/home/main" class="inline-flex">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span class="ml-[2px] hidden sm:block">
+                    관리자 홈
+                </span>
+            </a>
+
+            <a href="/" class="inline-flex">
+                <i class="fa-solid fa-house"></i>
+                <span class="ml-[2px] hidden sm:block">
+                    홈
+                </span>
+            </a>
+
+            <a href="/adm/withdraw/applyList" class="inline-flex">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span class="ml-[2px] hidden sm:block">
+                    출금
+                </span>
+            </a>
+
+            <a href="/adm/rebate/makeData" class="inline-flex">
+                <i class="fa-solid fa-code-merge"></i>
+                <span class="ml-[2px] hidden sm:block">
+                    정산 데이터 생성
+                </span>
+            </a>
+
+            <a href="/adm/rebate/rebateOrderItemList" class="inline-flex">
+                <i class="fa-solid fa-sack-dollar"></i>
+                <span class="ml-[2px] hidden sm:block">
+                    정산
+                </span>
+            </a>
+        </div>
+    </div>
+</header>
+</html>

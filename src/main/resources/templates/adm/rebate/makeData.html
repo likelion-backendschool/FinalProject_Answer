@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html layout:decorate="~{adm/layout/admLayout}">
+
+<head>
+    <title>정산데이터 생성</title>
+</head>
+
+<main layout:fragment="main">
+    <section class="section section-rebate-makeData flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-md w-full px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-code-merge"></i>
+
+                정산데이터 생성
+            </h1>
+
+            <form th:action method="POST" class="flex flex-col gap-3">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">정산범위</span>
+                    </label>
+                    <select name="yearMonth" class="select select-bordered">
+                        <option value="2022-11">2022-11</option>
+                        <option value="2022-10">2022-10</option>
+                        <option value="2022-09">2022-09</option>
+                        <option value="2022-08">2022-08</option>
+                        <option value="2022-07">2022-07</option>
+                        <option value="2022-06">2022-06</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 mt-2 gap-2">
+                    <a href="/adm/rebate/rebateOrderItemList" class="btn btn-secondary btn-outline">생성된 정산 데이터 보기</a>
+                    <input class="btn btn-primary" type="submit" value="정산 데이터 생성">
+                </div>
+
+            </form>
+        </div>
+    </section>
+</main>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+
+</head>
+
+<header layout:fragment="header" class="fixed z-40 top-0 left-0 w-full bg-white border-b-[1px] border-b-[color:#efefef] h-[35px] md:h-[50px]">
+    <div class="container mx-auto h-full flex items-center px-2">
+        <a href="/" class="logo flex font-bold mr-auto">
+            <span class="text-[#1E9EFE]">M</span>
+            <span class="ml-[2px] hidden lg:block">BOOKS</span>
+        </a>
+
+        <div class="flex gap-4">
+            <a href="/adm/home/main" class="inline-flex" sec:authorize="${@rq.admin}">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    관리자 홈
+                </span>
+            </a>
+
+            <a href="/member/login" class="inline-flex" th:if="${@rq.logout}">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    로그인
+                </span>
+            </a>
+
+            <a href="/member/join" class="inline-flex" th:if="${@rq.logout}">
+                <i class="fa-solid fa-user-plus"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    회원가입
+                </span>
+            </a>
+
+            <a href="javascript: document.logoutForm.submit();" class="inline-flex" th:if="${@rq.logined}">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    로그아웃
+                </span>
+            </a>
+            <form name="logoutForm" method="POST" th:action="@{/member/logout}" hidden></form>
+
+            <a href="/member/profile" class="inline-flex" th:if="${@rq.logined}">
+                <i class="fa-solid fa-user"></i>
+                <span class="ml-[2px]">
+                   <svg width="20" height="20" th:data-jdenticon-value="${@rq.member.jdenticon}"></svg>
+                </span>
+                <span class="ml-[2px] hidden lg:block">
+                    [[${@rq.member.name}]]
+                </span>
+            </a>
+
+            <a href="/cart/items" class="inline-flex" th:if="${@rq.logined}">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    장바구니
+                </span>
+            </a>
+
+            <a href="/post/write" class="inline-flex">
+                <i class="fa-solid fa-pen"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    글 작성
+                </span>
+            </a>
+
+            <a href="/post/list" class="inline-flex">
+                <i class="fa-solid fa-rectangle-list"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    글 목록
+                </span>
+            </a>
+
+            <a href="/product/create" class="inline-flex" th:if="${@rq.author}">
+                <i class="fa-solid fa-book-medical"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    도서 등록
+                </span>
+            </a>
+
+            <a href="/product/list" class="inline-flex">
+                <i class="fa-solid fa-book"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    도서 목록
+                </span>
+            </a>
+
+            <a href="/order/list" class="inline-flex">
+                <i class="fa-solid fa-basket-shopping"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    주문 목록
+                </span>
+            </a>
+
+            <a href="/withdraw/apply" class="inline-flex" th:if="${@rq.logined}">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    출금 신청
+                </span>
+            </a>
+        </div>
+    </div>
+</header>
+</html>

@@ -1,9 +1,10 @@
 package com.ll.exam.final__2022_10_08.app.product.entity;
 
+import com.ll.exam.final__2022_10_08.app.AppConfig;
 import com.ll.exam.final__2022_10_08.app.base.entity.BaseEntity;
 import com.ll.exam.final__2022_10_08.app.cart.entity.CartItem;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
-import com.ll.exam.final__2022_10_08.app.postkeyword.entity.PostKeyword;
+import com.ll.exam.final__2022_10_08.app.postKeyword.entity.PostKeyword;
 import com.ll.exam.final__2022_10_08.app.productTag.entity.ProductTag;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -40,7 +41,7 @@ public class Product extends BaseEntity {
     }
 
     public int getWholesalePrice() {
-        return (int) Math.ceil(getPrice() * 0.4);
+        return (int) Math.ceil(getPrice() * AppConfig.getWholesalePriceRate());
     }
 
     public boolean isOrderable() {

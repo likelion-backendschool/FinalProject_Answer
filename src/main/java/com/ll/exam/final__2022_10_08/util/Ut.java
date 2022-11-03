@@ -55,7 +55,7 @@ public class Ut {
         return (ObjectMapper) AppConfig.getContext().getBean("objectMapper");
     }
 
-    public String nf(long number) {
+    public static String nf(long number) {
         return String.format("%,d", (int) number);
     }
 

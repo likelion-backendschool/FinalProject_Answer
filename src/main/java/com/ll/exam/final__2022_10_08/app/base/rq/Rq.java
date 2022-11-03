@@ -83,6 +83,21 @@ public class Rq {
         return Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(errorMsg));
     }
 
+    public String modifyQueryParam(String paramName, String paramValue) {
+        return Ut.url.modifyQueryParam(getCurrentUrl(), paramName, paramValue);
+    }
+
+    private String getCurrentUrl() {
+        String url = req.getRequestURI();
+        String queryStr = req.getQueryString();
+
+        if ( StringUtils.hasText(queryStr) ) {
+            url += "?" + queryStr;
+        }
+
+        return url;
+    }
+
     public static String redirectWithMsg(String url, RsData rsData) {
         return "redirect:" + urlWithMsg(url, rsData);
     }
@@ -114,5 +129,25 @@ public class Rq {
 
     public boolean isLogined() {
         return isLogout() == false;
+    }
+
+    public boolean isAdmin() {
+        if ( isLogout() ) return false;
+
+        return memberContext.hasAuthority("ADMIN");
+    }
+
+    public boolean isAuthor() {
+        if ( isLogout() ) return false;
+
+        return memberContext.hasAuthority("AUTHOR");
+    }
+
+    public boolean isUsrPage() {
+        return isAdmPage() == false;
+    }
+
+    public boolean isAdmPage() {
+        return req.getRequestURI().startsWith("/adm");
     }
 }

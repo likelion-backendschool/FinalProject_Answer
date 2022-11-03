@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html layout:decorate="~{adm/layout/admLayout}">
+
+<head>
+    <title>정산데이터 목록</title>
+</head>
+
+<main layout:fragment="main">
+    <section class="section container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-sack-dollar"></i>
+                정산
+            </h1>
+
+            <div class="mt-2">
+                <select name="yearMonth" class="select select-bordered" th:currentUrl="${@rq.modifyQueryParam('yearMonth', '')}" onchange="location.href = this.getAttribute('currentUrl') + this.value;">
+                    <option value="2022-11">2022-11</option>
+                    <option value="2022-10">2022-10</option>
+                    <option value="2022-09">2022-09</option>
+                    <option value="2022-08">2022-08</option>
+                    <option value="2022-07">2022-07</option>
+                    <option value="2022-06">2022-06</option>
+                </select>
+                <script th:inline="javascript">
+                    const yearMonth = /*[[ ${yearMonth} ]]*/ null;
+                    $('select[name=yearMonth]').last().val(yearMonth);
+                </script>
+            </div>
+
+            <div class="overflow-x-auto mt-2">
+
+                <table class="table table-compact w-full">
+                    <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="orderItemCheckboxAll checkbox">
+                        </th>
+                        <th>주문품목번호</th>
+                        <th>결제날짜</th>
+                        <th>상품명</th>
+                        <th>결제가격</th>
+                        <th>PG FEE</th>
+                        <th>환불가격</th>
+                        <th>판매자</th>
+                        <th>예상정산가</th>
+                        <th>정산날짜</th>
+                        <th>정산내역번호</th>
+                        <th>정산</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="item : ${items}">
+                        <td>
+                            <input onchange="OrderItemCheckbox__changed();" th:if="${item.rebateAvailable}"
+                                   type="checkbox" class="orderItemCheckbox checkbox" th:value="${item.orderItem.id}">
+                        </td>
+                        <td th:text="${item.orderItem.id}"></td>
+                        <td th:text="${#temporals.format(item.payDate, 'yy-MM-dd HH:mm')}"></td>
+                        <td th:text="${item.productSubject}"></td>
+                        <td th:text="|￦ ${@ut.nf(item.payPrice)}|"></td>
+                        <td th:text="|￦ ${@ut.nf(item.pgFee)}|"></td>
+                        <td th:text="|￦ ${@ut.nf(item.refundPrice)}|"></td>
+                        <td th:text="${item.sellerName}"></td>
+                        <td th:text="|￦ ${@ut.nf(item.calculateRebatePrice)}|"></td>
+                        <td th:text="${#temporals.format(item.rebateDate, 'yy-MM-dd HH:mm')}"></td>
+                        <td th:text="${item.rebateCashLog?.id}"></td>
+                        <td>
+                            <a th:if="${item.rebateAvailable}" href="javascript:;" onclick="$(this).next().submit();"
+                               class="btn btn-primary btn-xs">정산</a>
+                            <form method="POST" th:action="@{|/adm/rebate/rebateOne/${item.orderItem.id}|}"
+                                  hidden></form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="grid grid-cols-2 mt-2 gap-2">
+                <button type="button" onclick="history.back();" class="btn btn-secondary btn-outline">
+                    <i class="fa-solid fa-angle-left"></i>
+                    <span class="ml-1">취소</span>
+                </button>
+                <a href="javascript:;" onclick="RebateForm__submit();" class="btn btn-primary btn-block">선택정산</a>
+                <form method="POST" name="rebateForm" th:action="@{|/adm/rebate/rebate|}" hidden>
+                    <input type="hidden" name="ids">
+                </form>
+            </div>
+
+            <script>
+                // 전체선택 체크박스
+                const $orderItemCheckboxAll = $('.orderItemCheckboxAll');
+                // 아이템 체크박스
+                const $orderItemCheckbox = $('.orderItemCheckbox');
+
+                $orderItemCheckboxAll.change(function () {
+                    const allChecked = $(this).prop('checked');
+                    $orderItemCheckbox.prop('checked', allChecked); // 아이템 체크박스들에게 체크상태 동기화
+                });
+
+                function OrderItemCheckbox__changed() {
+                    const allChecked = $orderItemCheckbox.length == $('.orderItemCheckbox:checked').length;
+
+                    $orderItemCheckboxAll.prop('checked', allChecked);
+                }
+
+                let RebateForm__submitDone = false;
+
+                function RebateForm__submit() {
+                    if (RebateForm__submitDone) return;
+
+                    const form = document.rebateForm;
+
+                    const $checked = $('.orderItemCheckbox:checked');
+
+                    if ($checked.length == 0) {
+                        alert('정산할 주문품목을 선택해주세요.');
+                        return;
+                    }
+
+                    const ids = $checked.map((index, el) => $(el).val()).get();
+                    form.ids.value = ids;
+                    form.submit();
+                    RebateForm__submitDone = true;
+                }
+            </script>
+        </div>
+    </section>
+</main>
+
+</html>

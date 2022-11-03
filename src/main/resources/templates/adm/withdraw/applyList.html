@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html layout:decorate="~{adm/layout/admLayout}">
+
+<head>
+    <title>출금신청 목록</title>
+</head>
+
+<main layout:fragment="main">
+    <section class="section container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                출금신청 목록
+            </h1>
+
+            <div class="overflow-x-auto mt-2">
+
+                <table class="table table-compact w-full">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>회원명</th>
+                            <th>은행명</th>
+                            <th>계좌번호</th>
+                            <th>금액</th>
+                            <th>신청날짜</th>
+                            <th>출금완료여부</th>
+                            <th>출금하기</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="item : ${withdrawApplies}">
+                            <td th:text="${item.id}"></td>
+                            <td th:text="${item.applicant.username}"></td>
+                            <td th:text="${item.bankName}"></td>
+                            <td th:text="${item.bankAccountNo}"></td>
+                            <td th:text="|￦ ${@ut.nf(item.price)}|"></td>
+                            <td th:text="${#temporals.format(item.createDate, 'yy-MM-dd HH:mm')}"></td>
+                            <td>
+                                <span th:if="${item.applyDoneAvailable == false}">O</span>
+                                <span th:if="${item.applyDoneAvailable == true}">X</span>
+                            </td>
+                            <td>
+                                <a th:if="${item.applyDoneAvailable}" href="javascript:;" onclick="$(this).next().submit();"
+                                   class="btn btn-primary btn-xs">출금</a>
+                                <form method="POST" th:action="@{|/adm/withdraw/${item.id}|}" hidden></form>
+                                <button th:if="${item.applyDoneAvailable == false}" disabled type="button">출금완료</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+</html>
