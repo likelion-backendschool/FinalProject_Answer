@@ -53,6 +53,10 @@ public class RebateService {
         RebateOrderItem oldRebateOrderItem = rebateOrderItemRepository.findByOrderItemId(item.getOrderItem().getId()).orElse(null);
 
         if (oldRebateOrderItem != null) {
+            if ( oldRebateOrderItem.isRebateDone() ) {
+                return;
+            }
+
             rebateOrderItemRepository.delete(oldRebateOrderItem);
         }
 

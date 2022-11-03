@@ -35,7 +35,7 @@ public class WithdrawApply extends BaseEntity {
         super(id);
     }
 
-    public boolean isApplicationAvailable() {
+    public boolean isApplyDoneAvailable() {
         if (withdrawDate != null || withdrawCashLog != null) {
             return false;
         }

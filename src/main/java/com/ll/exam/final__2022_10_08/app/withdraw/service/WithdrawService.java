@@ -46,6 +46,10 @@ public class WithdrawService {
             return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
         }
 
+        if (withdrawApply.isApplyDoneAvailable() == false) {
+            return RsData.of("F-2", "이미 처리되었습니다.");
+        }
+
         CashLog cashLog = memberService.addCash(
                 withdrawApply.getApplicant(),
                 withdrawApply.getPrice() * -1,
