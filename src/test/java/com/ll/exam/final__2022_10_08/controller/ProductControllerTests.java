@@ -34,7 +34,7 @@ public class ProductControllerTests {
 
     @Test
     @DisplayName("상품 등록 폼")
-    @WithUserDetails("user1")
+    @WithUserDetails("user2")
     void t1() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
@@ -51,7 +51,7 @@ public class ProductControllerTests {
 
     @Test
     @DisplayName("상품 등록")
-    @WithUserDetails("user1")
+    @WithUserDetails("user2")
     void t2() throws Exception {
         // WHEN
         ResultActions resultActions = mvc

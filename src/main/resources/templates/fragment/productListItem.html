@@ -26,21 +26,24 @@
                 <div class="badge badge-outline">
                     <i class="fa-solid fa-pen"></i>
                     <span class="ml-2"
-                          th:text="${#temporals.format(product.createDate, 'yy-MM-dd HH:mm')}"></span>
+                          th:text="${#temporals.format(product.createDate, 'yy-MM-dd')}"></span>
                 </div>
             </div>
             <div th:if="${product.createDate != product.modifyDate}" class="flex justify-end">
                 <div class="badge">
                     <i class="fa-solid fa-eraser"></i>
                     <span class="ml-2"
-                          th:text="${#temporals.format(product.modifyDate, 'yy-MM-dd HH:mm')}"></span>lear
+                          th:text="${#temporals.format(product.modifyDate, 'yy-MM-dd')}"></span>lear
                 </div>
             </div>
             <div class="card-actions justify-end">
-                <a th:href class="btn btn-sm">
+                <a href="javascript:;" onclick="$(this).next().submit();" class="btn btn-sm"
+                   th:classappend="${product.extra_actor_hasInCart ? 'btn-disabled' : ''}">
                     <i class="fa-solid fa-cart-plus"></i>
                     <span class="ml-2">장바구니</span>
                 </a>
+
+                <form th:action="@{|/cart/addItem/${product.id}|}" method="POST"></form>
 
                 <a th:href="@{|/product/${product.id}|}" class="btn btn-sm">
                     <i class="fa-solid fa-eye"></i>

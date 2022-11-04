@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/html">
+
+<body>
+<th:block th:fragment="cartItem">
+
+    <div class="card bg-base-100 shadow-xl pt-8">
+        <a th:href="@{|/product/${product.id}|}" class="block">
+            <figure>
+                <svg width="200" height="200" th:data-jdenticon-value="${product.jdenticon}"></svg>
+            </figure>
+        </a>
+        <div class="card-body">
+            <h2 class="card-title flex flex-wrap">
+                <a th:href="@{|/product/${product.id}|}" class="mr-auto">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span th:text="${product.subject}"></span>
+                </a>
+                <div class="flex">
+                    <svg width="20" height="20"
+                         th:data-jdenticon-value="${product.author.jdenticon}"></svg>
+                    <div th:text="${product.author.name}"></div>
+                </div>
+            </h2>
+            <div th:text="|￦ ${@ut.nf(product.salePrice)}|"></div>
+
+            <div class="flex justify-end">
+                <div class="badge badge-outline">
+                    <i class="fa-solid fa-pen"></i>
+                    <span class="ml-2"
+                          th:text="${#temporals.format(product.createDate, 'yy-MM-dd')}"></span>
+                </div>
+            </div>
+
+            <div class="card-actions justify-end mt-2">
+                <a th:href="@{|/product/${product.id}|}" class="btn btn-sm">
+                    <i class="fa-solid fa-eye"></i>
+                    <span class="ml-2">보기</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

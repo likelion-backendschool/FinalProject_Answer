@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>장바구니</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section th:unless="${items != null && items.size > 0}"
+             class="section section-cart-items flex-grow flex items-center justify-center">
+        <div class="text-center">
+            <div>장바구니에 상품이 존재하지 않습니다.</div>
+            <a href="/product/list" class="block text-link mt-2"><i class="fa-solid fa-book"></i> 도서 보러가기</a>
+        </div>
+    </section>
+
+    <section th:if="${items != null && items.size > 0}" class="section section-cart-items container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-cart-shopping"></i>
+                장바구니
+            </h1>
+
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <input type="checkbox" class="Cart_allCheckbox checkbox">
+                    <span class="ml-2 pt-2">전체선택</span>
+                </label>
+
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mt-4">
+                    <li th:each="item : ${items}" th:with="product=${item.product}">
+                        <input type="checkbox" class="Cart_ItemCheckbox checkbox"
+                               th:value="${item.id}">
+
+                        <th:block th:replace="fragment/cartItem :: cartItem"></th:block>
+                    </li>
+                </ul>
+
+                <div class="grid grid-cols-2 mt-14 gap-2">
+                    <a href="javascript:;" onclick="RemoveCartItemsForm__submit();"
+                       class="btn btn-warning btn-outline">선택삭제</a>
+                    <form method="POST" name="removeCartItemsForm" th:action="@{|/cart/removeItems|}" hidden>
+                        <input type="hidden" name="ids">
+                    </form>
+
+                    <a href="javascript:;" onclick="$(this).next().submit();" class="btn btn-primary">전체
+                        주문하기</a>
+                    <form method="POST" th:action="@{|/order/create|}" hidden></form>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            // 전체선택 체크박스
+            const $Cart_allCheckbox = $('.Cart_allCheckbox');
+            // 아이템 체크박스
+            const $Cart_ItemCheckbox = $('.Cart_ItemCheckbox');
+
+            // 전체선택 체크박스에 이벤트
+            $Cart_allCheckbox.change(function () {
+                const allChecked = $(this).prop('checked');
+                $Cart_ItemCheckbox.prop('checked', allChecked); // 아이템 체크박스들에게 체크상태 동기화
+            });
+
+            // 아이템 체크박스에 이벤트
+            $Cart_ItemCheckbox.change(CartItemCheckbox__changed);
+
+            function CartItemCheckbox__changed() {
+                const allChecked = $Cart_ItemCheckbox.length == $('.Cart_ItemCheckbox:checked').length;
+
+                $Cart_allCheckbox.prop('checked', allChecked);
+            }
+
+            // 폼 처리
+            let RemoveCartItemsForm__submitDone = false;
+
+            function RemoveCartItemsForm__submit() {
+                if (RemoveCartItemsForm__submitDone) return;
+
+                const form = document.removeCartItemsForm;
+
+                const $checked = $('.Cart_ItemCheckbox:checked');
+
+                if ($checked.length == 0) {
+                    alert('삭제할 장바구니 품목을 선택해주세요.');
+                    return;
+                }
+
+                const ids = $checked.map((index, el) => $(el).val()).get();
+                form.ids.value = ids;
+                form.submit();
+                RemoveCartItemsForm__submitDone = true;
+            }
+        </script>
+    </section>
+
+</main>
+</body>
+</html>

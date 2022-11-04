@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>주문 상세내용</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <script src="https://js.tosspayments.com/v1"></script>
+
+    <script th:inline="javascript">
+        const orderId = /*[[ ${order.id} ]]*/ null;
+        const buyerName = /*[[ ${order.buyer.name} ]]*/ null;
+        const orderName = /*[[ ${order.name} ]]*/ null;
+        const orderPayPrice = /*[[ ${order.calculatePayPrice} ]]*/ null;
+        const toss_clientKey = /*[[ ${@environment.getProperty('custom.tossPayments.clientKey')} ]]*/ null;
+
+    </script>
+
+    <form hidden name="payByRestCashOnlyForm" method="POST" th:action="@{|/order/${order.id}/payByRestCashOnly|}">
+
+    </form>
+
+    <section class="section section-order-detail container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-basket-shopping"></i>
+                주문 상세내용
+            </h1>
+
+            <div class="mt-2 flex flex-col gap-2">
+                <div class="badge badge-outline" th:text="|주문번호 : ${order.id}번|"></div>
+                <h2 class="flex mt-1">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span class="ml-1" th:text="${order.name}"></span>
+                </h2>
+                <div th:text="|￦ ${@ut.nf(order.calculatePayPrice)}|"></div>
+                <div class="flex justify-end gap-1">
+                    <div class="badge badge-outline" th:if="${order.cancelDate != null}">
+                        <span>취소 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.cancelDate, 'yy-MM-dd')}"></span>
+                    </div>
+                    <div class="badge badge-outline" th:if="${order.refundDate != null}">
+                        <span>환불 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.refundDate, 'yy-MM-dd')}"></span>
+                    </div>
+                    <div class="badge badge-outline" th:if="${order.payDate != null}">
+                        <span>결제 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.payDate, 'yy-MM-dd')}"></span>
+                    </div>
+                    <div class="badge badge-outline" th:if="${order.createDate != null}">
+                        <span>주문 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.createDate, 'yy-MM-dd')}"></span>
+                    </div>
+                </div>
+
+                <h2 class="font-bold text-lg">
+                    <i class="fa-solid fa-book"></i>
+                    도서 목록
+                </h2>
+
+                <div class="mt-2">
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                        <li th:each="orderItem : ${order.orderItems}" th:with="product = ${orderItem.product}">
+                            <th:block th:replace="fragment/orderItem :: orderItem"></th:block>
+                        </li>
+                    </ul>
+                </div>
+
+                <h2 class="font-bold text-lg mt-10">
+                    <i class="fa-regular fa-credit-card"></i>
+                    결제
+                </h2>
+
+                <div th:if="${!@orderService.actorCanCancel(@rq.member, order).isFail()}">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">보유 예치금</span>
+                        </label>
+                        <span th:text="|￦ ${@ut.nf(actorRestCash)}|"></span>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">PG 결제금액</span>
+                        </label>
+                        <span>
+                            ￦
+                            <span id="PaymentForm__pgPayPriceDisplay"></span>
+                        </span>
+                    </div>
+
+                    <div class="form-control"
+                         th:with="maxUseRestCash = ${order.calculatePayPrice > actorRestCash ? actorRestCash : order.calculatePayPrice}">
+                        <label class="label">
+                            <span class="label-text">사용할 예치금</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="PaymentForm__useRestCash"
+                                   th:placeholder="|￦ 0 ~ ￦ ${@ut.nf(maxUseRestCash)}|"
+                                   class="input input-bordered min-w-[190px]" min="0" th:max="${maxUseRestCash}"
+                                   onkeydown="PaymentForm__updateForm();"
+                                   onkeyup="PaymentForm__updateForm();"
+                            >
+
+                            <label class="flex items-center gap-2">
+                                <input onchange="PaymentForm__useRestCashAllChanged();" id="PaymentForm__useRestCashAll"
+                                       type="checkbox" class="ml-2 checkbox">
+
+                                <span>전액</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="mt-4">
+                        <button th:if="${order.payable}" onclick="payment();" class="btn btn-sm btn-primary">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                            <span class="ml-2">결제</span>
+                        </button>
+
+                        <a th:if="${@orderService.actorCanCancel(@rq.member, order).isSuccess()}" href="javascript:;"
+                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="ml-2">취소</span>
+                        </a>
+
+                        <form th:action="@{|/order/${order.id}/cancel|}" method="POST" hidden></form>
+
+                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"
+                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="ml-2">환불</span>
+                        </a>
+                        <form th:action="@{|/order/${order.id}/refund|}" method="POST" hidden></form>
+
+                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).getResultCode().equals('F-3')}"
+                           class="btn btn-sm btn-outline btn-primary btn-disabled">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="ml-2">환불가능시간이 지났습니다</span>
+                        </a>
+
+                        <a th:if="${order.isCanceled()}"
+                           class="btn btn-sm btn-outline btn-primary btn-disabled">
+                            <span class="ml-2">취소된 주문 입니다.</span>
+                        </a>
+
+                        <a th:if="${order.isRefunded()}"
+                           class="btn btn-sm btn-outline btn-primary btn-disabled">
+                            <span class="ml-2">환불된 주문입니다.</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+
+        const $PaymentForm__useRestCash = $("#PaymentForm__useRestCash");
+        const $PaymentForm__useRestCashAll = $("#PaymentForm__useRestCashAll");
+        const $PaymentForm__pgPayPriceDisplay = $("#PaymentForm__pgPayPriceDisplay");
+
+        const tossPayments = TossPayments(toss_clientKey);
+
+        function payment() {
+            let useRestCash = parseInt($PaymentForm__useRestCash.val());
+
+            if (isNaN(useRestCash)) {
+                useRestCash = 0;
+            }
+
+            if (orderPayPrice == useRestCash) {
+                document.payByRestCashOnlyForm.submit();
+                return;
+            }
+
+            const method = "카드"; // "카드" 혹은 "가상계좌"
+
+            const paymentData = {
+                amount: orderPayPrice - useRestCash,
+                orderId: "order__" + orderId + "__" + (Math.random() + "").substring(2),
+                orderName,
+                customerName: buyerName,
+                successUrl: window.location.origin + "/order/" + orderId + "/success",
+                failUrl: window.location.origin + "/order/" + orderId + "/fail"
+            };
+
+            tossPayments.requestPayment(method, paymentData);
+        }
+    </script>
+
+    <script>
+        function PaymentForm__updateForm() {
+            let useRestCash = parseInt($PaymentForm__useRestCash.val());
+
+            if (isNaN(useRestCash)) {
+                useRestCash = 0;
+            }
+
+            const maxUseRestCash = parseInt($PaymentForm__useRestCash.attr('max'));
+
+            if (useRestCash > maxUseRestCash) {
+                useRestCash = maxUseRestCash;
+                $PaymentForm__useRestCash.val(maxUseRestCash);
+            }
+
+            if (useRestCash == maxUseRestCash) {
+                $PaymentForm__useRestCashAll.prop('checked', true);
+            } else {
+                $PaymentForm__useRestCashAll.prop('checked', false);
+            }
+
+            const pgPayPrice = orderPayPrice - useRestCash;
+
+            $PaymentForm__pgPayPriceDisplay.text(pgPayPrice.toLocaleString('ko-KR'));
+        }
+
+        function PaymentForm__useRestCashAllChanged() {
+            if ($PaymentForm__useRestCashAll.prop('checked')) {
+                const maxUseRestCash = parseInt($PaymentForm__useRestCash.attr('max'));
+                $PaymentForm__useRestCash.val(maxUseRestCash);
+            } else {
+                $PaymentForm__useRestCash.val(0);
+            }
+
+            PaymentForm__updateForm();
+        }
+
+        PaymentForm__updateForm();
+    </script>
+
+</main>
+</body>
+</html>
