@@ -2,6 +2,8 @@ spring:
   mail:
     password: NEED_TO_INPUT_GMAIL_APP_PASSWORD
 custom:
+  jwt:
+    secretKey: NEED_TO_INPUT__NEED_TO_INPUT__NEED_TO_INPUT__NEED_TO_INPUT__NEED_TO_INPUT__NEED_TO_INPUT
   tossPayments:
     clientKey: NEED_TO_INPUT
     secretKey: NEED_TO_INPUT

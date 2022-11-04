@@ -32,11 +32,8 @@ public class JobConfig {
     }
 
     public String getPerformMakeRebateDataJobParam1Value() {
-        LocalDateTime localDateTime1 = LocalDateTime.now();
-        LocalDateTime localDateTime2 = LocalDateTime.now().minusDays(14);
+        LocalDateTime rebateDate = LocalDateTime.now().getDayOfMonth() >= 15 ? LocalDateTime.now().minusMonths(1) : LocalDateTime.now().minusMonths(2);
 
-        LocalDateTime localDateTime3 = localDateTime1.getMonth() == localDateTime2.getMonth() ? LocalDateTime.now().minusMonths(1) : LocalDateTime.now().minusMonths(2);
-
-        return  "%04d".formatted(localDateTime3.getYear()) + "-" + "%02d".formatted(localDateTime3.getMonthValue());
+        return "%04d".formatted(rebateDate.getYear()) + "-" + "%02d".formatted(rebateDate.getMonthValue());
     }
 }

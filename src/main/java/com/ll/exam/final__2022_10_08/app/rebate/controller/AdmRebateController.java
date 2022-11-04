@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +46,7 @@ public class AdmRebateController {
     @GetMapping("/rebateOrderItemList")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String showRebateOrderItemList(String yearMonth, Model model) {
-        if (yearMonth == null) {
+        if (StringUtils.hasText(yearMonth) == false) {
             yearMonth = "2022-11";
         }
 
