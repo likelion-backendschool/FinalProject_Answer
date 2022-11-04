@@ -60,7 +60,7 @@ public class WithdrawService {
 
         return RsData.of(
                 "S-1",
-                "출금번호 %d이 %s원이 출금되었습니다.".formatted(withdrawApply.getId(), Ut.nf(withdrawApply.getPrice())),
+                "출금신청(%d번) 처리완료. %s원이 출금되었습니다.".formatted(withdrawApply.getId(), Ut.nf(withdrawApply.getPrice())),
                 Ut.mapOf(
                         "cashLogId", cashLog.getId()
                 )
