@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.ll.exam.final__2022_10_08.app.AppConfig.cancelAvailableSeconds;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -42,15 +44,13 @@ public class OrderService {
 
         List<OrderItem> orderItems = new ArrayList<>();
 
-        for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
+        cartItems
+                .stream()
+                .map(CartItem::getProduct)
+                .filter(Product::isOrderable)
+                .forEach(product -> orderItems.add(new OrderItem(product)));
 
-            if (product.isOrderable()) {
-                orderItems.add(new OrderItem(product));
-            }
-
-            cartService.removeItem(cartItem);
-        }
+        cartItems.stream().forEach(cartItem -> cartService.removeItem(cartItem));
 
         return create(buyer, orderItems);
     }
@@ -85,7 +85,7 @@ public class OrderService {
         memberService.addCash(buyer, pgPayPrice * -1, "주문__%d__사용__토스페이먼츠".formatted(order.getId()));
 
         if (useRestCash > 0) {
-            if ( useRestCash > restCash ) {
+            if (useRestCash > restCash) {
                 throw new RuntimeException("예치금이 부족합니다.");
             }
 
@@ -157,11 +157,11 @@ public class OrderService {
             return RsData.of("F-1", "이미 취소되었습니다.");
         }
 
-        if ( order.isRefunded() ) {
+        if (order.isRefunded()) {
             return RsData.of("F-4", "이미 환불되었습니다.");
         }
 
-        if ( order.isPaid() == false ) {
+        if (order.isPaid() == false) {
             return RsData.of("F-5", "결제가 되어야 환불이 가능합니다.");
         }
 
@@ -169,10 +169,10 @@ public class OrderService {
             return RsData.of("F-2", "권한이 없습니다.");
         }
 
-        long between = ChronoUnit.MINUTES.between(order.getPayDate(), LocalDateTime.now());
+        long between = ChronoUnit.SECONDS.between(order.getPayDate(), LocalDateTime.now());
 
-        if (between > 10) {
-            return RsData.of("F-3", "결제 된지 10분이 지났으므로, 환불 할 수 없습니다.");
+        if (between > cancelAvailableSeconds) {
+            return RsData.of("F-3", "결제 된지 %d분이 지났으므로, 환불 할 수 없습니다.".formatted(between / 60));
         }
 
         return RsData.of("S-1", "환불할 수 있습니다.");
@@ -219,7 +219,7 @@ public class OrderService {
     }
 
     public RsData actorCanCancel(Member actor, Order order) {
-        if ( order.isPaid() ) {
+        if (order.isPaid()) {
             return RsData.of("F-3", "이미 결제처리 되었습니다.");
         }
 
@@ -232,5 +232,9 @@ public class OrderService {
         }
 
         return RsData.of("S-1", "취소할 수 있습니다.");
+    }
+
+    public List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate) {
+        return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
     }
 }

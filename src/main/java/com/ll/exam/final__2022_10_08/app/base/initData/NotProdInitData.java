@@ -2,6 +2,8 @@ package com.ll.exam.final__2022_10_08.app.base.initData;
 
 import com.ll.exam.final__2022_10_08.app.cart.service.CartService;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
+import com.ll.exam.final__2022_10_08.app.member.entity.emum.AuthLevel;
+import com.ll.exam.final__2022_10_08.app.member.repository.MemberRepository;
 import com.ll.exam.final__2022_10_08.app.member.service.MemberService;
 import com.ll.exam.final__2022_10_08.app.order.entity.Order;
 import com.ll.exam.final__2022_10_08.app.order.repository.OrderRepository;
@@ -9,6 +11,7 @@ import com.ll.exam.final__2022_10_08.app.order.service.OrderService;
 import com.ll.exam.final__2022_10_08.app.post.service.PostService;
 import com.ll.exam.final__2022_10_08.app.product.entity.Product;
 import com.ll.exam.final__2022_10_08.app.product.service.ProductService;
+import com.ll.exam.final__2022_10_08.app.withdraw.service.WithdrawService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +28,14 @@ public class NotProdInitData {
 
     @Bean
     CommandLineRunner initData(
+            MemberRepository memberRepository,
             MemberService memberService,
             PostService postService,
             ProductService productService,
             CartService cartService,
             OrderService orderService,
-            OrderRepository orderRepository
+            OrderRepository orderRepository,
+            WithdrawService withdrawService
     ) {
         return args -> {
             if (initDataDone) {
@@ -40,6 +45,10 @@ public class NotProdInitData {
             initDataDone = true;
 
             Member member1 = memberService.join("user1", "1234", "user1@test.com", null);
+
+            member1.setAuthLevel(AuthLevel.ADMIN);
+            memberRepository.save(member1);
+
             Member member2 = memberService.join("user2", "1234", "user2@test.com", "홍길순");
 
             postService.write(
@@ -89,11 +98,11 @@ public class NotProdInitData {
 
             class Helper {
                 public Order order(Member member, List<Product> products) {
-                    for (int i = 0; i < products.size(); i++) {
-                        Product product = products.get(i);
-
-                        cartService.addItem(member, product);
-                    }
+                    products
+                            .stream()
+                            .forEach(product -> {
+                                cartService.addItem(member, product);
+                            });
 
                     return orderService.createFromCart(member);
                 }
@@ -129,10 +138,7 @@ public class NotProdInitData {
                     )
             );
 
-            cartService.addItem(member1, product3);
-            cartService.addItem(member1, product4);
-
-            Order order4 = helper.order(member2, Arrays.asList(
+            Order order4 = helper.order(member1, Arrays.asList(
                             product3,
                             product4
                     )
@@ -140,11 +146,19 @@ public class NotProdInitData {
 
             orderService.payByRestCashOnly(order4);
 
+            orderService.refund(order4, member1);
+
             Order order5 = helper.order(member2, Arrays.asList(
-                            product3,
-                            product4
+                            product3
                     )
             );
+
+            cartService.addItem(member1, product4);
+
+            withdrawService.apply("우리은행", "1002333203948", 50000, member1);
+            withdrawService.apply("수협은행", "1002333203947", 40000, member1);
+            withdrawService.apply("국민은행", "1002333203946", 30000, member2);
+            withdrawService.apply("카카오은행", "1002333203945", 20000, member2);
         };
     }
 }
