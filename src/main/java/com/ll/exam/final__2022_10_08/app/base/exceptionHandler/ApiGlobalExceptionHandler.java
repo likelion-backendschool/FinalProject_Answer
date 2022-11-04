@@ -31,4 +31,13 @@ public class ApiGlobalExceptionHandler {
 
         return Ut.sp.responseEntityOf(RsData.of("F-MethodArgumentNotValidException", msg, data));
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<RsData<String>> errorHandler(RuntimeException exception) {
+        String msg = exception.getClass().toString();
+
+        String data = exception.getMessage();
+
+        return Ut.sp.responseEntityOf(RsData.of("F-RuntimeException", msg, data));
+    }
 }

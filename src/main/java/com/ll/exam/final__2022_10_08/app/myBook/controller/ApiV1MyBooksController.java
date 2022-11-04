@@ -6,6 +6,8 @@ import com.ll.exam.final__2022_10_08.app.myBook.dto.*;
 import com.ll.exam.final__2022_10_08.app.myBook.entity.MyBook;
 import com.ll.exam.final__2022_10_08.app.myBook.service.MyBookService;
 import com.ll.exam.final__2022_10_08.util.Ut;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ public class ApiV1MyBooksController {
     private final Rq rq;
 
     @GetMapping(value = "", consumes = ALL_VALUE)
+    @Operation(summary =  "로그인된 회원이 보유한 도서 목록", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RsData<MyBooksResponse>> myBooks() {
         List<MyBookDto> myBooks = myBookService
                 .findAllByOwnerId(rq.getId())
@@ -45,6 +48,7 @@ public class ApiV1MyBooksController {
     }
 
     @GetMapping(value = "/{myBookId}", consumes = ALL_VALUE)
+    @Operation(summary =  "로그인된 회원이 보유한 도서 단건", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RsData<MyBookResponse>> myBook(@PathVariable long myBookId) {
         MyBook myBook = myBookService.findByIdAndOwnerId(myBookId, rq.getId());
         List<BookChapterDto> bookChapters = myBookService.getBookChapters(myBook);

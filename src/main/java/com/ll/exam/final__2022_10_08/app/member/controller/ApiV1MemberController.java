@@ -9,6 +9,8 @@ import com.ll.exam.final__2022_10_08.app.member.dto.MemberDto;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
 import com.ll.exam.final__2022_10_08.app.member.service.MemberService;
 import com.ll.exam.final__2022_10_08.util.Ut;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class ApiV1MemberController {
     private final Rq rq;
 
     @PostMapping("/login")
+    @Operation(summary = "로그인, 엑세스 토큰 발급")
     public ResponseEntity<RsData<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
         Member member = memberService.findByUsername(loginRequest.getUsername()).orElse(null);
 
@@ -66,6 +69,7 @@ public class ApiV1MemberController {
         );
     }
 
+    @Operation(summary = "로그인된 사용자의 정보", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/me", consumes = ALL_VALUE)
     public ResponseEntity<RsData<MeResponse>> me() {
         if (rq.isLogout()) { // 임시코드, 나중에는 시프링 시큐리티를 이용해서 로그인을 안했다면, 아예 여기로 못 들어오도록
