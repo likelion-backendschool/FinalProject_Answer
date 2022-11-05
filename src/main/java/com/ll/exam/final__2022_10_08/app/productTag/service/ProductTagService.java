@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,28 +21,17 @@ public class ProductTagService {
 
     @Transactional
     public void applyProductTags(Product product, String productTagContents) {
-        List<ProductTag> oldProductTags = getProductTags(product);
-
         List<String> productKeywordContents = Arrays.stream(productTagContents.split("#"))
                 .map(String::trim)
                 .filter(s -> s.length() > 0)
                 .collect(Collectors.toList());
 
-        List<ProductTag> needToDelete = new ArrayList<>();
+        Set<ProductTag> newProductTags = productKeywordContents
+                .stream()
+                .map(productKeywordContent -> saveProductTag(product, productKeywordContent))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        for (ProductTag oldProductTag : oldProductTags) {
-            boolean contains = productKeywordContents.stream().anyMatch(s -> s.equals(oldProductTag.getProductKeyword().getContent()));
-
-            if (contains == false) {
-                needToDelete.add(oldProductTag);
-            }
-        }
-
-        needToDelete.forEach(productTag -> productTagRepository.delete(productTag));
-
-        productKeywordContents.forEach(productKeywordContent -> {
-            saveProductTag(product, productKeywordContent);
-        });
+        product.updateProductTags(newProductTags);
     }
 
     private ProductTag saveProductTag(Product product, String productKeywordContent) {
@@ -70,10 +56,6 @@ public class ProductTagService {
 
     public List<ProductTag> getProductTags(Product product) {
         return productTagRepository.findAllByProductId(product.getId());
-    }
-
-    public List<ProductTag> getProductTagsByProductIdIn(long[] ids) {
-        return productTagRepository.findAllByProductIdIn(ids);
     }
 
     public List<ProductTag> getProductTags(String productKeywordContent) {

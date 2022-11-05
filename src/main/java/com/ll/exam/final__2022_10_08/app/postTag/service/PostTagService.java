@@ -10,10 +10,7 @@ import com.ll.exam.final__2022_10_08.app.productTag.entity.ProductTag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,27 +20,17 @@ public class PostTagService {
     private final PostTagRepository postTagRepository;
 
     public void applyPostTags(Post post, String postTagContents) {
-        List<PostTag> oldPostTags = getPostTags(post);
-
         List<String> postKeywordContents = Arrays.stream(postTagContents.split("#"))
                 .map(String::trim)
                 .filter(s -> s.length() > 0)
                 .collect(Collectors.toList());
 
-        List<PostTag> needToDelete = new ArrayList<>();
-
-        oldPostTags
+        Set<PostTag> newPostTags = postKeywordContents
                 .stream()
-                .filter(oldPostTag -> !postKeywordContents
-                        .stream()
-                        .anyMatch(s -> s.equals(oldPostTag.getPostKeyword().getContent())))
-                .forEach(oldPostTag -> needToDelete.add(oldPostTag));
+                .map(postKeywordContent -> savePostTag(post, postKeywordContent))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        needToDelete.forEach(postTag -> postTagRepository.delete(postTag));
-
-        postKeywordContents.forEach(postKeywordContent -> {
-            savePostTag(post, postKeywordContent);
-        });
+        post.updatePostTags(newPostTags);
     }
 
     private PostTag savePostTag(Post post, String postKeywordContent) {

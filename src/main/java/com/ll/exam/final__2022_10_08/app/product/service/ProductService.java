@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @Transactional(readOnly = true)
@@ -126,8 +127,6 @@ public class ProductService {
                 .mapToLong(Product::getId)
                 .toArray();
 
-        List<ProductTag> productTagsByProductIds = productTagService.getProductTagsByProductIdIn(ids);
-
         // 현재 로그인 되어 있고
         // 장바구니에 이미 추가되었는지
 
@@ -146,19 +145,6 @@ public class ProductService {
                     .map(product -> cartItemsByProductIdMap.get(product.getId()))
                     .forEach(cartItem -> cartItem.getProduct().getExtra().put("actor_cartItem", cartItem));
         }
-
-        Map<Long, List<ProductTag>> productTagsByProductIdMap = productTagsByProductIds.stream()
-                .collect(groupingBy(
-                        productTag -> productTag.getProduct().getId(), toList()
-                ));
-
-        products.stream().forEach(product -> {
-            List<ProductTag> productTags = productTagsByProductIdMap.get(product.getId());
-
-            if (productTags == null || productTags.size() == 0) return;
-
-            product.getExtra().put("productTags", productTags);
-        });
     }
 
     public boolean actorCanModify(Member actor, Product product) {

@@ -1,6 +1,7 @@
 package com.ll.exam.final__2022_10_08.app.base.initData;
 
 import com.ll.exam.final__2022_10_08.app.cart.service.CartService;
+import com.ll.exam.final__2022_10_08.app.cash.entity.CashLog;
 import com.ll.exam.final__2022_10_08.app.member.entity.Member;
 import com.ll.exam.final__2022_10_08.app.member.entity.emum.AuthLevel;
 import com.ll.exam.final__2022_10_08.app.member.repository.MemberRepository;
@@ -90,12 +91,12 @@ public class NotProdInitData {
             Product product4 = productService.create(member2, "상품명4", 60_000, "HTML", "#IT #HTML");
             Product product5 = productService.create(member1, "상품명5", 70_000, "IT", "#IT #HTML");
 
-            memberService.addCash(member1, 10_000, "충전__무통장입금");
-            memberService.addCash(member1, 20_000, "충전__무통장입금");
-            memberService.addCash(member1, -5_000, "출금__일반");
-            memberService.addCash(member1, 1_000_000, "충전__무통장입금");
+            memberService.addCash(member1, 10_000, member1, CashLog.EvenType.충전__무통장입금);
+            memberService.addCash(member1, 20_000, member1, CashLog.EvenType.충전__무통장입금);
+            memberService.addCash(member1, -5_000, member1, CashLog.EvenType.출금__통장입금);
+            memberService.addCash(member1, 1_000_000, member1, CashLog.EvenType.충전__무통장입금);
 
-            memberService.addCash(member2, 2_000_000, "충전__무통장입금");
+            memberService.addCash(member2, 2_000_000, member1, CashLog.EvenType.충전__무통장입금);
 
             class Helper {
                 public Order order(Member member, List<Product> products) {

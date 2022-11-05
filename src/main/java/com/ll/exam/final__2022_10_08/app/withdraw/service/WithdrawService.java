@@ -50,20 +50,48 @@ public class WithdrawService {
             return RsData.of("F-2", "이미 처리되었습니다.");
         }
 
+        long restCash = memberService.getRestCash(withdrawApply.getApplicant());
+
+        if (withdrawApply.getPrice() > restCash) {
+            return RsData.of("F-3", "예치금이 부족합니다.");
+        }
+
         CashLog cashLog = memberService.addCash(
                 withdrawApply.getApplicant(),
                 withdrawApply.getPrice() * -1,
-                "출금__%d__지급__현금".formatted(withdrawApply.getId())
-        ).getData().getCashLog();
+                withdrawApply.getApplicant(),
+                CashLog.EvenType.출금__통장입금
+        )
+        .getData().getCashLog();
 
-        withdrawApply.setApplyDone(cashLog.getId());
+        withdrawApply.setApplyDone(cashLog.getId(), "관리자에 의해서 처리되었습니다.");
 
         return RsData.of(
                 "S-1",
-                "출금번호 %d이 %s원이 출금되었습니다.".formatted(withdrawApply.getId(), Ut.nf(withdrawApply.getPrice())),
+                "%d번 출금신청이 처리되었습니다. %s원이 출금되었습니다.".formatted(withdrawApply.getId(), Ut.nf(withdrawApply.getPrice())),
                 Ut.mapOf(
                         "cashLogId", cashLog.getId()
                 )
+        );
+    }
+
+    public RsData cancelApply(Long withdrawApplyId) {
+        WithdrawApply withdrawApply = withdrawApplyRepository.findById(withdrawApplyId).orElse(null);
+
+        if (withdrawApply == null) {
+            return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
+        }
+
+        if (withdrawApply.isCancelAvailable() == false) {
+            return RsData.of("F-2", "취소가 불가능합니다.");
+        }
+
+        withdrawApply.setCancelDone("관리자에 의해서 취소되었습니다.");
+
+        return RsData.of(
+                "S-1",
+                "%d번 출금신청이 취소되었습니다.".formatted(withdrawApply.getId()),
+                null
         );
     }
 }

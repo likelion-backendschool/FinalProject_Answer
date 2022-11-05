@@ -75,7 +75,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
+    public String showDetail(@PathVariable Long id, Model model) {
         Post post = postService.findForPrintById(id).get();
 
         Member actor = rq.getMember();
@@ -91,7 +91,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
-    public String list(Model model) {
+    public String showList(Model model) {
         List<Post> posts = postService.findAllForPrintByAuthorIdOrderByIdDesc(rq.getId());
 
         model.addAttribute("posts", posts);

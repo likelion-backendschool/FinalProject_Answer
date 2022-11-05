@@ -4,6 +4,7 @@ import com.ll.exam.final__2022_10_08.app.security.filter.JwtAuthorizationFilter;
 import com.ll.exam.final__2022_10_08.app.security.handler.ApiAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,6 +15,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+@Order(0)
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class ApiSecurityConfig {

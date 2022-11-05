@@ -38,4 +38,12 @@ public class AdmWithdrawController {
 
         return Rq.redirectWithMsg("/adm/withdraw/applyList", withdrawRsData);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/{withdrawApplyId}/cancel")
+    public String cancel(@PathVariable Long withdrawApplyId) {
+        RsData withdrawRsData = withdrawService.cancelApply(withdrawApplyId);
+
+        return Rq.redirectWithMsg("/adm/withdraw/applyList", withdrawRsData);
+    }
 }

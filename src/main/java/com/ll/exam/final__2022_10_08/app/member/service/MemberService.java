@@ -2,6 +2,7 @@ package com.ll.exam.final__2022_10_08.app.member.service;
 
 import com.ll.exam.final__2022_10_08.app.AppConfig;
 import com.ll.exam.final__2022_10_08.app.base.dto.RsData;
+import com.ll.exam.final__2022_10_08.app.base.entity.BaseEntity;
 import com.ll.exam.final__2022_10_08.app.cash.entity.CashLog;
 import com.ll.exam.final__2022_10_08.app.cash.service.CashService;
 import com.ll.exam.final__2022_10_08.app.email.service.EmailService;
@@ -163,8 +164,8 @@ public class MemberService {
     }
 
     @Transactional
-    public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
-        CashLog cashLog = cashService.addCash(member, price, eventType);
+    public RsData<AddCashRsDataBody> addCash(Member member, long price, BaseEntity relEntity, CashLog.EvenType eventType) {
+        CashLog cashLog = cashService.addCash(member, price, relEntity.getModelName(), relEntity.getId(), eventType);
 
         long newRestCash = getRestCash(member) + cashLog.getPrice();
         member.setRestCash(newRestCash);
@@ -218,7 +219,7 @@ public class MemberService {
     }
 
     public Member getByUsername__cached(String username) {
-        MemberService thisObj = (MemberService)AppConfig.getContext().getBean("memberService");
+        MemberService thisObj = (MemberService) AppConfig.getContext().getBean("memberService");
         Map<String, Object> memberMap = thisObj.getMemberMapByUsername__cached(username);
 
         return Member.fromMap(memberMap);

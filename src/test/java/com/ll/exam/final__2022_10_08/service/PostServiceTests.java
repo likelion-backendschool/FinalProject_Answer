@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class PostServiceTests {
 
     @Test
     @DisplayName("글 수정")
+    @Rollback(value = false)
     void t2() {
         Post post = postService.findById(1).get();
         postService.modify(post, "제목 new", "내용 new", "내용 new", "#IT #일반기사 #프론트엔드");

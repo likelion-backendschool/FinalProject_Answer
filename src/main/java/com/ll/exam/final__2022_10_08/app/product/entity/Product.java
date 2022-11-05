@@ -8,11 +8,17 @@ import com.ll.exam.final__2022_10_08.app.postKeyword.entity.PostKeyword;
 import com.ll.exam.final__2022_10_08.app.productTag.entity.ProductTag;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import java.util.List;
+import javax.persistence.OneToMany;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
@@ -31,6 +37,11 @@ public class Product extends BaseEntity {
     private PostKeyword postKeyword;
     private String subject;
     private int price;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    Set<ProductTag> productTags = new LinkedHashSet<>();
 
     public Product(long id) {
         super(id);
@@ -53,18 +64,6 @@ public class Product extends BaseEntity {
     }
 
     public String getExtra_inputValue_hashTagContents() {
-        Map<String, Object> extra = getExtra();
-
-        if (extra.containsKey("productTags") == false) {
-            return "";
-        }
-
-        List<ProductTag> productTags = (List<ProductTag>) extra.get("productTags");
-
-        if (productTags.isEmpty()) {
-            return "";
-        }
-
         return productTags
                 .stream()
                 .map(productTag -> "#" + productTag.getProductKeyword().getContent())
@@ -73,18 +72,6 @@ public class Product extends BaseEntity {
     }
 
     public String getExtra_productTagLinks() {
-        Map<String, Object> extra = getExtra();
-
-        if (extra.containsKey("productTags") == false) {
-            return "";
-        }
-
-        List<ProductTag> productTags = (List<ProductTag>) extra.get("productTags");
-
-        if (productTags.isEmpty()) {
-            return "";
-        }
-
         return productTags
                 .stream()
                 .map(productTag -> {
@@ -107,10 +94,29 @@ public class Product extends BaseEntity {
             return null;
         }
 
-        return (CartItem)extra.get("actor_cartItem");
+        return (CartItem) extra.get("actor_cartItem");
     }
 
     public boolean getExtra_actor_hasInCart() {
         return getExtra_actor_cartItem() != null;
+    }
+
+    public void updateProductTags(Set<ProductTag> newProductTags) {
+        // 지울거 모으고
+        Set<ProductTag> needToDelete = productTags
+                .stream()
+                .filter(Predicate.not(newProductTags::contains))
+                .collect(Collectors.toSet());
+
+        // 모아진걸 지우고
+        needToDelete
+                .stream()
+                .forEach(productTags::remove);
+
+        // 넣을거 넣는다.
+        // SET 이기 때문에 중복 신경쓰지 말고 넣는다.
+        newProductTags
+                .stream()
+                .forEach(productTags::add);
     }
 }

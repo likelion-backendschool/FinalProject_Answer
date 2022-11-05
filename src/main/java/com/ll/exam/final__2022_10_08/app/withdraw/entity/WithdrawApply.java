@@ -30,21 +30,41 @@ public class WithdrawApply extends BaseEntity {
     @ToString.Exclude
     private CashLog withdrawCashLog; // 출금에 관련된 내역
     private LocalDateTime withdrawDate;
+    private LocalDateTime cancelDate;
+    private String msg;
 
     public WithdrawApply(long id) {
         super(id);
     }
 
     public boolean isApplyDoneAvailable() {
-        if (withdrawDate != null || withdrawCashLog != null) {
+        if (withdrawDate != null || withdrawCashLog != null || cancelDate != null) {
             return false;
         }
 
         return true;
     }
 
-    public void setApplyDone(Long cashLogId) {
+    public void setApplyDone(Long cashLogId, String msg) {
         withdrawDate = LocalDateTime.now();
         this.withdrawCashLog = new CashLog(cashLogId);
+        this.msg = msg;
+    }
+
+    public void setCancelDone(String msg) {
+        cancelDate = LocalDateTime.now();
+        this.msg = msg;
+    }
+
+    public boolean isCancelAvailable() {
+        return isApplyDoneAvailable();
+    }
+
+    public boolean isApplyDone() {
+        return withdrawDate != null;
+    }
+
+    public boolean isCancelDone() {
+        return cancelDate != null;
     }
 }

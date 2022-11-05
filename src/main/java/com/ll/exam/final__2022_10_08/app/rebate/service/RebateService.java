@@ -91,7 +91,8 @@ public class RebateService {
         CashLog cashLog = memberService.addCash(
                 rebateOrderItem.getProduct().getAuthor(),
                 calculateRebatePrice,
-                "정산__%d__지급__예치금".formatted(rebateOrderItem.getOrderItem().getId())
+                rebateOrderItem,
+                CashLog.EvenType.작가정산__예치금
         ).getData().getCashLog();
 
         rebateOrderItem.setRebateDone(cashLog.getId());

@@ -6,6 +6,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,11 +17,11 @@ public class JobConfig {
     private final JobLauncher jobLauncher;
     private final Job makeRebateDataJob;
 
-    // @Scheduled(cron = "0 0 4 * * *") // 실제 코드
+    @Scheduled(cron = "0 0 4 * * *") // 실제 코드
     // @Scheduled(cron = "30 * * * * *") // 개발용 코드
     public void performMakeRebateDataJob() throws Exception {
-        // String yearMonth = getPerformMakeRebateDataJobParam1Value(); // 실제 코드
-        String yearMonth = "2022-11";
+        String yearMonth = getPerformMakeRebateDataJobParam1Value(); // 실제 코드
+        // String yearMonth = "2022-11"; // 개발용 코드
 
         JobParameters param = new JobParametersBuilder()
                 .addString("yearMonth", yearMonth)
@@ -31,11 +32,8 @@ public class JobConfig {
     }
 
     public String getPerformMakeRebateDataJobParam1Value() {
-        LocalDateTime localDateTime1 = LocalDateTime.now();
-        LocalDateTime localDateTime2 = LocalDateTime.now().minusDays(14);
+        LocalDateTime rebateDate = LocalDateTime.now().getDayOfMonth() >= 15 ? LocalDateTime.now().minusMonths(1) : LocalDateTime.now().minusMonths(2);
 
-        LocalDateTime localDateTime3 = localDateTime1.getMonth() == localDateTime2.getMonth() ? LocalDateTime.now().minusMonths(1) : LocalDateTime.now().minusMonths(2);
-
-        return  "%04d".formatted(localDateTime3.getYear()) + "-" + "%02d".formatted(localDateTime3.getMonthValue());
+        return "%04d".formatted(rebateDate.getYear()) + "-" + "%02d".formatted(rebateDate.getMonthValue());
     }
 }
