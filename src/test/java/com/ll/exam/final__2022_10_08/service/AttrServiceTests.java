@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ class AttrServiceTests {
 
     @Test
     @DisplayName("영속변수 저장 및 조회")
-    @Rollback(false)
     public void t1() {
         attrService.set("member__1__extra__homeTown", "전주");
 
